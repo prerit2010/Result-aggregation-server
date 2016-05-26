@@ -1,0 +1,1 @@
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/result_aggregation.db'
