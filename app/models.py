@@ -25,7 +25,7 @@ class SuccessfulInstalls(db.Model):
     name = db.Column(db.String)
     version = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
-    create_time = db.Column(db.DateTime, default=db.func.now())
+    create_time = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Package %r>' % self.name
@@ -37,7 +37,7 @@ class FailedInstalls(db.Model):
     error_description = db.Column(db.String)
     error_cause = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
-    create_time = db.Column(db.DateTime, default=db.func.now())
+    create_time = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Package %r>' % self.name
