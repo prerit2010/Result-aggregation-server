@@ -10,7 +10,7 @@ To fly this aircraft:
 git clone git@github.com:prerit2010/Result-aggregation-server.git
 ```
 
-* create a Virtual environment
+* Create a Virtual environment
 ```
 cd Result-aggregation-server
 virtualenv env
@@ -28,5 +28,5 @@ pip install -r requirements.txt`
 python manage.py db migrate
 python manage.py db upgrade
 ```
-* Run
+* Run:
 `python run.py`

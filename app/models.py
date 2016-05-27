@@ -14,9 +14,30 @@ class UserSystemInfo(db.Model):
     workshop_id = db.Column(db.String)
     email_id = db.Column(db.String)
     create_time = db.Column(db.DateTime, default=datetime.datetime.now)
+    successful_installs = db.relationship('SuccessfulInstalls', backref='user', lazy='dynamic')
+    failed_installs = db.relationship('FailedInstalls', backref='user', lazy='dynamic')
+
+    def __repr__(self):
+        return '<User %r>' % self.email_id
 
 class SuccessfulInstalls(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     version = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
     create_time = db.Column(db.DateTime, default=db.func.now())
+
+    def __repr__(self):
+        return '<Package %r>' % self.name
+
+class FailedInstalls(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    version = db.Column(db.String)
+    error_description = db.Column(db.String)
+    error_cause = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
+    create_time = db.Column(db.DateTime, default=db.func.now())
+
+    def __repr__(self):
+        return '<Package %r>' % self.name
