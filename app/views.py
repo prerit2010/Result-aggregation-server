@@ -28,9 +28,7 @@ def installation_data():
     ]
 
     failed_objects_list = [
-        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version'),
-            error_description=fail_install.get('error_description'),
-            error_cause=fail_install.get('error_cause')) 
+        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version')) 
             for fail_install in failed_installs 
     ]
 
