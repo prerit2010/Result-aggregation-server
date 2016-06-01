@@ -13,6 +13,11 @@ def installation_data():
     unique_user_id = request.json.get('unique_user_id')
     if unique_user_id is None:
         unique_user_id = str(uuid.uuid4())
+        user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
+        while(user_info):
+            unique_user_id = str(uuid.uuid4())
+            user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
+        
     system_dist = user_system_info.get('system_dist')
     uname  = user_system_info.get('uname')
     version = user_system_info.get('version')
@@ -40,6 +45,7 @@ def installation_data():
                 attempt_id=attempt_id) 
             for fail_install in failed_installs
     ]
+    
     user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
     if user_info is None:
         user_info = UserSystemInfo(system_dist=system_dist, python_version=python_version,
