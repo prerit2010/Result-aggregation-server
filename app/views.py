@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, make_response
 from app import app, db
 from flask import request
-from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls
+from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
+import uuid
 
 @app.route('/installation_data/', methods=['POST'])
 def installation_data():
@@ -9,7 +10,9 @@ def installation_data():
     user_system_info = request.json.get('user_system_info')
     successful_installs = request.json.get('successful_installs')
     failed_installs = request.json.get('failed_installs')
-
+    unique_user_id = request.json.get('unique_user_id')
+    if unique_user_id is None:
+        unique_user_id = str(uuid.uuid4())
     system_dist = user_system_info.get('system_dist')
     uname  = user_system_info.get('uname')
     version = user_system_info.get('version')
@@ -21,21 +24,28 @@ def installation_data():
     workshop_id = user_system_info.get('workshop_id')
     email_id = user_system_info.get('email_id')
 
+    attempt = Attempts(unique_user_id=unique_user_id)
+    db.session.add(attempt)
+    db.session.flush()
+    attempt_id = attempt.id
+
     success_objects_list = [
-        SuccessfulInstalls(name=succ_install.get('name'),
-            version=succ_install.get('version')) 
+        SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version'),
+                attempt_id=attempt_id) 
             for succ_install in successful_installs 
     ]
 
     failed_objects_list = [
-        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version')) 
-            for fail_install in failed_installs 
+        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version'),
+                attempt_id=attempt_id) 
+            for fail_install in failed_installs
     ]
-
-    user_info = UserSystemInfo(system_dist=system_dist, python_version=python_version,
-                    uname=uname, version=version, system=system,
-                    machine=machine, system_platform=system_platform,
-                    workshop_id=workshop_id, email_id=workshop_id)
+    user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
+    if user_info is None:
+        user_info = UserSystemInfo(system_dist=system_dist, python_version=python_version,
+                    uname=uname, version=version, system=system, machine=machine,
+                    system_platform=system_platform, workshop_id=workshop_id,
+                    email_id=workshop_id, unique_user_id=unique_user_id)
     
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
@@ -52,5 +62,5 @@ def installation_data():
         success = True
         summary = "Successful"
     
-    response = {"status" : success, "summary" : summary}
+    response = {'status' : success, 'key': unique_user_id, 'summary' : summary}
     return make_response(jsonify(response))

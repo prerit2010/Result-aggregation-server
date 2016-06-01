@@ -3,6 +3,7 @@ import datetime
 
 class UserSystemInfo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    unique_user_id = db.Column(db.String, unique=True)
     system_dist = db.Column(db.String)
     uname  = db.Column(db.String)
     version = db.Column(db.String)
@@ -25,6 +26,7 @@ class SuccessfulInstalls(db.Model):
     name = db.Column(db.String)
     version = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
+    attempt_id = db.Column(db.Integer, db.ForeignKey('attempts.id'))
     create_time = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
@@ -37,7 +39,17 @@ class FailedInstalls(db.Model):
     # error_description = db.Column(db.String)
     # error_cause = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
+    attempt_id = db.Column(db.Integer, db.ForeignKey('attempts.id'))
     create_time = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __repr__(self):
         return '<Package %r>' % self.name
+
+class Attempts(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    unique_user_id = db.Column(db.String)
+    successful_installs = db.relationship('SuccessfulInstalls', backref='attempt', lazy='dynamic')
+    failed_installs = db.relationship('FailedInstalls', backref='attempt', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Attempt: {0}, UUID: {1}>'.format(self.id, self.unique_user_id)
