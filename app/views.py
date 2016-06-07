@@ -1,10 +1,10 @@
 from flask import Flask, jsonify, make_response
-from app import app, db
+from app import application, db
 from flask import request
 from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 
-@app.route('/installation_data/', methods=['POST'])
+@application.route('/installation_data/', methods=['POST'])
 def installation_data():
 
     user_system_info = request.json.get('user_system_info')
@@ -14,20 +14,20 @@ def installation_data():
     if unique_user_id is None:
         unique_user_id = str(uuid.uuid4())
         user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
-        while(user_info):
+        while(user_info): # Resolving Collision
             unique_user_id = str(uuid.uuid4())
             user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
         
-    system_dist = user_system_info.get('system_dist')
-    uname  = user_system_info.get('uname')
-    version = user_system_info.get('version')
+    distribution_name = user_system_info.get('distribution_name')
+    distribution_version = user_system_info.get('distribution_version')
+    system_version = user_system_info.get('system_version')
     system = user_system_info.get('system')
     machine = user_system_info.get('machine')
     system_platform = user_system_info.get('system_platform')
-    uname = user_system_info.get('uname')
     python_version = user_system_info.get('python_version')
     workshop_id = user_system_info.get('workshop_id')
     email_id = user_system_info.get('email_id')
+    # uname  = user_system_info.get('uname')
 
     attempt = Attempts(unique_user_id=unique_user_id)
     db.session.add(attempt)
@@ -48,10 +48,11 @@ def installation_data():
     
     user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
     if user_info is None:
-        user_info = UserSystemInfo(system_dist=system_dist, python_version=python_version,
-                    uname=uname, version=version, system=system, machine=machine,
-                    system_platform=system_platform, workshop_id=workshop_id,
-                    email_id=workshop_id, unique_user_id=unique_user_id)
+        user_info = UserSystemInfo(distribution_name=distribution_name, 
+                    distribution_version=distribution_version, system_version=system_version,
+                    system=system, machine=machine, system_platform=system_platform,
+                    workshop_id=workshop_id, email_id=workshop_id,
+                    python_version=python_version, unique_user_id=unique_user_id)
     
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
@@ -70,3 +71,7 @@ def installation_data():
     
     response = {'status' : success, 'key': unique_user_id, 'summary' : summary}
     return make_response(jsonify(response))
+
+@application.route('/')
+def default():
+    return "<h1 style='color:blue'>Hello There!</h1>"

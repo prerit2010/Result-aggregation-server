@@ -1,7 +1,7 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-app = Flask(__name__)
-app.config.from_object('config')
-app.secret_key = 'some_secret'
-db = SQLAlchemy(app)
+application = Flask(__name__)
+application.config.from_object('config')
+application.secret_key = 'some_secret'
+db = SQLAlchemy(application)
 from app import views, models
