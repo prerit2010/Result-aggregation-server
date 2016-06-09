@@ -36,7 +36,7 @@ class FailedInstalls(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     version = db.Column(db.String)
-    # error_description = db.Column(db.String)
+    error_description = db.Column(db.String)
     # error_cause = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('user_system_info.id'))
     attempt_id = db.Column(db.Integer, db.ForeignKey('attempts.id'))
