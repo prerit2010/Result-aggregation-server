@@ -4,6 +4,10 @@ from flask import request
 from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 
+@application.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+
 @application.route('/installation_data/', methods=['POST'])
 def installation_data():
 
