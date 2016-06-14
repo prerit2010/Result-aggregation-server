@@ -16,9 +16,9 @@ class UserSystemInfo(db.Model):
     email_id = db.Column(db.String)
     create_time = db.Column(db.DateTime, default=datetime.datetime.now)
     successful_installs = db.relationship('SuccessfulInstalls', backref='user',
-                                        cascade="all, delete-orphan", lazy='dynamic')
+                                        cascade="all,delete", lazy='dynamic')
     failed_installs = db.relationship('FailedInstalls', backref='user', 
-                                        cascade="all, delete-orphan",lazy='dynamic')
+                                        cascade="all,delete",lazy='dynamic')
 
     def __repr__(self):
         return '<User %r>' % self.email_id
