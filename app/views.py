@@ -34,19 +34,15 @@ def installation_data():
     # uname  = user_system_info.get('uname')
 
     attempt = Attempts(unique_user_id=unique_user_id)
-    db.session.add(attempt)
-    db.session.flush()
-    attempt_id = attempt.id
-
+   
     success_objects_list = [
-        SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version'),
-                attempt_id=attempt_id) 
+        SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version')) 
             for succ_install in successful_installs 
     ]
 
     failed_objects_list = [
         FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version'),
-            attempt_id=attempt_id, error_description=fail_install.get('error_description')) 
+             error_description=fail_install.get('error_description')) 
             for fail_install in failed_installs
     ]
     
@@ -60,6 +56,9 @@ def installation_data():
     
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
+    attempt.successful_installs.extend(success_objects_list)
+    attempt.failed_installs.extend(failed_objects_list)
+    db.session.add(attempt)
     db.session.add(user_info)
     db.session.add_all(success_objects_list)
     db.session.add_all(failed_objects_list)

@@ -27,7 +27,6 @@ class TestCase(unittest.TestCase):
         count = UserSystemInfo.query.count()
         self.assertEqual(count, 1)
 
-
     def test_post_data(self):
         data = {"user_system_info" : 
                     {"distribution_name": "Ubuntu", 
