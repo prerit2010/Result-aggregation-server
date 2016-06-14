@@ -81,9 +81,11 @@ class TestCase(unittest.TestCase):
         user = UserSystemInfo.query.get(1)
         db.session.delete(user)
         db.session.commit()
-        count = UserSystemInfo.query.count()
+        count = UserSystemInfo.query.count() #Count User rows
         self.assertEqual(count, 0)
-        count = FailedInstalls.query.count()
+        count = FailedInstalls.query.count() #Count Failure rows
+        self.assertEqual(count, 0)
+        count = SuccessfulInstalls.query.count() #Count Success rows
         self.assertEqual(count, 0)
 
 if __name__ == '__main__':

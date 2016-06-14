@@ -50,8 +50,10 @@ class FailedInstalls(db.Model):
 class Attempts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     unique_user_id = db.Column(db.String)
-    successful_installs = db.relationship('SuccessfulInstalls', backref='attempt', lazy='dynamic')
-    failed_installs = db.relationship('FailedInstalls', backref='attempt', lazy='dynamic')
+    successful_installs = db.relationship('SuccessfulInstalls', backref='attempt',
+                                            cascade="all,delete", lazy='dynamic')
+    failed_installs = db.relationship('FailedInstalls', backref='attempt',
+                                        cascade="all,delete", lazy='dynamic')
 
     def __repr__(self):
         return '<Attempt: {0}, UUID: {1}>'.format(self.id, self.unique_user_id)
