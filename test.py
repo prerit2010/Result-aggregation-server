@@ -130,6 +130,24 @@ class TestCase(unittest.TestCase):
                                     headers={'Content-Type':'application/json'})
         self.assertEqual(response.status_code, 200)
 
+    def test_post_empty_user_data(self):
+        data = {"user_system_info" : 
+                    {},
+                "failed_installs" : [{"name" : "EasyMercurial", "version": "2.5.0",
+                                        "error_description": "errors finding EasyMercurial version"
+                                     },
+                                     {"name" : "Nose (nosetests)", "version": "4.0",
+                                        "error_description": "errors finding Nose (nosetests) version"
+                                     }
+                                    ],
+                "successful_installs": [{"name": "git", "version" : "2.5.0"},
+                                        {"name": "make", "version" : "4.0"}
+                                       ]
+                }
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()
