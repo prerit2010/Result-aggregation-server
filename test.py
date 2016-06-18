@@ -148,6 +148,18 @@ class TestCase(unittest.TestCase):
                                     headers={'Content-Type':'application/json'})
         self.assertEqual(response.status_code, 200)
 
+    def test_post_modifies_unique_id(self):
+        data = {"user_system_info" : 
+                    {},
+                "failed_installs" : [],
+                "successful_installs": [],
+                "unique_user_id" : "7dd03934-bed1-443e-a4f" #modified manually
+                }
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+        message = json.loads(response.data)['summary']['message']
+        self.assertEqual(message, "new id generated")
 
 if __name__ == '__main__':
     unittest.main()
