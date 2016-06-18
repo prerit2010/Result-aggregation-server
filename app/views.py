@@ -10,18 +10,27 @@ def internal_error(error):
 
 @application.route('/installation_data/', methods=['POST'])
 def installation_data():
-
     user_system_info = request.json.get('user_system_info')
     successful_installs = request.json.get('successful_installs')
     failed_installs = request.json.get('failed_installs')
     unique_user_id = request.json.get('unique_user_id')
     if unique_user_id is None:
         unique_user_id = str(uuid.uuid4())
+        message = "new id generated"
         user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
         while(user_info): # Resolving Collision
             unique_user_id = str(uuid.uuid4())
             user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
-        
+    else:
+        message = "pushed data with same id"
+        """ Check whether the received unique id has already an associated record 
+            in the database, or is it accidently changed by the user.
+        """
+        user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
+        if user_info is None:
+            unique_user_id = str(uuid.uuid4())
+            message = "new id generated"
+
     distribution_name = user_system_info.get('distribution_name')
     distribution_version = user_system_info.get('distribution_version')
     system_version = user_system_info.get('system_version')
@@ -66,13 +75,11 @@ def installation_data():
     try:
         db.session.commit()
     except:
-        success = False
-        summary = "Something bad happened"
+        summary = {"status": "Something bad happened"}
     else:
-        success = True
-        summary = "Successful"
-    
-    response = {'status' : success, 'key': unique_user_id, 'summary' : summary}
+        summary = {"status": "Successful"}
+    summary['message'] = message
+    response = {'key': unique_user_id, 'summary' : summary}
     return make_response(jsonify(response))
 
 @application.route('/')
