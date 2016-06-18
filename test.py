@@ -88,5 +88,25 @@ class TestCase(unittest.TestCase):
         count = SuccessfulInstalls.query.count() #Count Success rows
         self.assertEqual(count, 0)
 
+    def test_post_empty_failure(self):
+        data = {"user_system_info" : 
+                    {"distribution_name": "Ubuntu", 
+                        "distribution_version": "15.10",
+                        "system_verson": "#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
+                        "system": "Linux",
+                        "machine": "x86_64",
+                        "system_platform": "Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
+                        "python_version" : "2.7.10"
+                    },
+                "failed_installs" : [],
+                "successful_installs": [{"name": "git", "version" : "2.5.0"},
+                                        {"name": "make", "version" : "4.0"}
+                                       ]
+                }
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+
+
 if __name__ == '__main__':
     unittest.main()
