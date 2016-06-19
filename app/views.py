@@ -60,7 +60,7 @@ def installation_data():
         user_info = UserSystemInfo(distribution_name=distribution_name, 
                     distribution_version=distribution_version, system_version=system_version,
                     system=system, machine=machine, system_platform=system_platform,
-                    workshop_id=workshop_id, email_id=workshop_id,
+                    workshop_id=workshop_id, email_id=email_id,
                     python_version=python_version, unique_user_id=unique_user_id)
     
     user_info.successful_installs.extend(success_objects_list)
