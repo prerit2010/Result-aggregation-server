@@ -3,20 +3,14 @@ from app import application, db
 from flask import request
 from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from limiter import *
 
 @application.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
 
-limiter = Limiter(
-    application,
-    key_func=get_remote_address,
-    global_limits=["400 per day", "100 per hour"]
-)
-
 @application.route('/installation_data/', methods=['POST'])
+@ratelimit(limit=100, per=60*60)
 def installation_data():
     user_system_info = request.json.get('user_system_info')
     successful_installs = request.json.get('successful_installs')
@@ -91,6 +85,15 @@ def installation_data():
     return make_response(jsonify(response))
 
 @application.route('/')
-@limiter.exempt
 def default():
     return "<h1 style='color:blue'>Hello There!</h1>"
+
+@application.after_request
+def inject_x_rate_headers(response):
+    limit = get_view_rate_limit()
+    if limit and limit.send_x_headers:
+        h = response.headers
+        h.add('X-RateLimit-Remaining', str(limit.remaining))
+        h.add('X-RateLimit-Limit', str(limit.limit))
+        h.add('X-RateLimit-Reset', str(limit.reset))
+    return response
