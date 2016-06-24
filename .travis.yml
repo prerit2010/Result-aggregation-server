@@ -4,4 +4,6 @@ python:
 # command to install dependencies
 install: "pip install -r requirements.txt"
 # command to run tests
+services:
+  - redis-server
 script: "python test.py"
