@@ -71,8 +71,10 @@ def installation_data():
         user_info.system = system
         user_info.machine = machine
         user_info.system_platform = system_platform
-        user_info.workshop_id = workshop_id
-        user_info.email_id = email_id
+        if email_id is not None:
+            user_info.email_id = email_id
+        if workshop_id is not None:
+            user_info.workshop_id = workshop_id
         user_info.python_version = python_version
         user_info.unique_user_id = unique_user_id
 
