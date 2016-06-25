@@ -64,7 +64,18 @@ def installation_data():
                     system=system, machine=machine, system_platform=system_platform,
                     workshop_id=workshop_id, email_id=email_id,
                     python_version=python_version, unique_user_id=unique_user_id)
-    
+    else: #Update anyway
+        user_info.distribution_name = distribution_name
+        user_info.distribution_version = distribution_version
+        user_info.system_version = system_version
+        user_info.system = system
+        user_info.machine = machine
+        user_info.system_platform = system_platform
+        user_info.workshop_id = workshop_id
+        user_info.email_id = email_id
+        user_info.python_version = python_version
+        user_info.unique_user_id = unique_user_id
+
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
     attempt.successful_installs.extend(success_objects_list)
