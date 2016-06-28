@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, make_response
 from app import application, db
-from flask import request
+from flask import request, render_template
 from models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 from limiter import *
@@ -100,6 +100,11 @@ def installation_data():
 @application.route('/')
 def default():
     return "<h1 style='color:blue'>Hello There!</h1>"
+
+@application.route('/view/')
+def data_view():
+    return render_template('index.html')
+
 
 @application.after_request
 def inject_x_rate_headers(response):

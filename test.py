@@ -174,5 +174,33 @@ class TestCase(unittest.TestCase):
         message = json.loads(response.data)['summary']['message']
         self.assertEqual(message, "new id generated")
 
+    def test_post_with_same_unique_id(self):
+        """Post the data with same unique id (same user), and count the number
+           of rows of UserSystemInfo"""
+        data = {"user_system_info" : 
+                    {},
+                "failed_installs" : [],
+                "successful_installs": [],
+                "unique_user_id" : None
+                }
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+        count = UserSystemInfo.query.count() #Count User rows
+        self.assertEqual(count, 1)
+        key = json.loads(response.data)['key']
+        data = {"user_system_info" : 
+                    {},
+                "failed_installs" : [],
+                "successful_installs": [],
+                "unique_user_id" : key #using same unique key
+                }
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+        """The number of rows should remail 1 only"""
+        count = UserSystemInfo.query.count() #Count User rows
+        self.assertEqual(count, 1)
+
 if __name__ == '__main__':
     unittest.main()
