@@ -10,7 +10,7 @@ def internal_error(error):
     db.session.rollback()
 
 @application.route('/installation_data/', methods=['POST'])
-@ratelimit(limit=100, per=60*60)
+@ratelimit(limit=500, per=60*60)
 def installation_data():
     user_system_info = request.json.get('user_system_info')
     successful_installs = request.json.get('successful_installs')
