@@ -103,8 +103,17 @@ def default():
 
 @application.route('/view/')
 def data_view():
-    return render_template('index.html')
-
+    user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
+    x_values = []
+    y_values = []
+    for user in user_info:
+        x_values.append(user.system)
+        y_values.append(user.count)
+    y_sum = sum(y_values)
+    y_percentage = []
+    for val in y_values:
+        y_percentage.append((float(val)/y_sum)*100)
+    return render_template('index.html', x_values=x_values, y_values=y_percentage)
 
 @application.after_request
 def inject_x_rate_headers(response):
