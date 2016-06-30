@@ -9,6 +9,7 @@ To fly this aircraft:
 ```
 git clone git@github.com:prerit2010/Result-aggregation-server.git
 ```
+* Project is built on python 2.7.
 
 * Create a Virtual environment
 ```
