@@ -103,6 +103,7 @@ def default():
 
 @application.route('/view/')
 def data_view():
+    """chart for different os users"""
     user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
     x_values = []
     y_values = []
@@ -113,7 +114,24 @@ def data_view():
     y_percentage = []
     for val in y_values:
         y_percentage.append((float(val)/y_sum)*100)
-    return render_template('index.html', x_values=x_values, y_values=y_percentage)
+    os_users = {"x_values" : x_values, "y_values" : y_percentage}
+
+    """chart for most failed packages"""
+
+    failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version).all()
+    fail_list = [
+        fail.name + " ( " + fail.version + " )" for fail in failed_info
+    ]
+    from collections import Counter
+    counts = Counter(fail_list)
+    x_val = []
+    y_val = []
+    for key in counts:
+        x_val.append(key)
+        y_val.append(counts[key])
+    most_failed_packages = {"x_values" : x_val, "y_values" : y_val}
+
+    return render_template('index.html', os_users=os_users, most_failed_packages=most_failed_packages)
 
 @application.after_request
 def inject_x_rate_headers(response):
