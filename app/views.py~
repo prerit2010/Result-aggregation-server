@@ -43,7 +43,7 @@ def installation_data():
     workshop_id = user_system_info.get('workshop_id')
     email_id = user_system_info.get('email_id')
     # uname  = user_system_info.get('uname')
-
+    print "lol"
     attempt = Attempts(unique_user_id=unique_user_id)
    
     success_objects_list = [
