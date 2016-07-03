@@ -49,13 +49,13 @@ class TestCase(unittest.TestCase):
 
     def test_insert_User_Info(self):
         unique_user_id = str(uuid.uuid4())
-    	u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
+        u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
                             system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
                             system="Linux", machine="x86_64",
                             system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
                             python_version="2.7.10", unique_user_id=unique_user_id)
-    	db.session.add(u)
-    	db.session.commit()
+        db.session.add(u)
+        db.session.commit()
         count = UserSystemInfo.query.count()
         self.assertEqual(count, 1)
 
@@ -124,7 +124,7 @@ class TestCase(unittest.TestCase):
         response = self.application.post('/installation_data/', data=json.dumps(data),
                                     headers={'Content-Type':'application/json'})
         self.assertEqual(response.status_code, 200)
-        message = json.loads(response.data)['summary']['message']
+        message = json.loads(response.data.decode('utf-8'))['summary']['message']
         self.assertEqual(message, "new id generated")
 
     def test_post_none_unique_id(self):
@@ -136,7 +136,7 @@ class TestCase(unittest.TestCase):
         response = self.application.post('/installation_data/', data=json.dumps(data),
                                     headers={'Content-Type':'application/json'})
         self.assertEqual(response.status_code, 200)
-        message = json.loads(response.data)['summary']['message']
+        message = json.loads(response.data.decode('utf-8'))['summary']['message']
         self.assertEqual(message, "new id generated")
 
     def test_post_with_same_unique_id(self):
@@ -152,7 +152,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         count = UserSystemInfo.query.count() #Count User rows
         self.assertEqual(count, 1)
-        key = json.loads(response.data)['key']
+        key = json.loads(response.data.decode('utf-8'))['key']
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : [],
                 "successful_installs": [],
@@ -178,7 +178,7 @@ class TestCase(unittest.TestCase):
         response = self.application.post('/installation_data/', data=json.dumps(data),
                                     headers={'Content-Type':'application/json'})
         self.assertEqual(response.status_code, 200)
-        key = json.loads(response.data)['key']
+        key = json.loads(response.data.decode('utf-8'))['key']
         user = UserSystemInfo.query.first()
         assert user.email_id is not None
         assert user.workshop_id is not None
