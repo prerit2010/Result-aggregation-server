@@ -102,6 +102,7 @@ def installation_data():
 def default():
     return "<h1 style='color:blue'>Hello There!</h1>"
 
+
 @application.route('/view/')
 def data_view():
     user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
@@ -121,6 +122,33 @@ def data_view():
         return make_response(jsonify(response))
 
     return render_template('index.html', response=response)
+
+
+@application.route('/view/<workshop_id>/')
+def data_view_by_workshop(workshop_id):
+    user_info = db.session.query(UserSystemInfo.system, 
+                    db.func.count().label("count")).filter_by(workshop_id=workshop_id
+                    ).group_by(UserSystemInfo.system).all()
+    os_users = {}
+    for user in user_info:
+        os_users[user.system] = user.count
+
+    failed_info = FailedInstalls.query.join(UserSystemInfo,
+                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
+                    FailedInstalls.name, FailedInstalls.version).filter(
+                    UserSystemInfo.workshop_id==workshop_id)
+    fail_list = [
+        fail.name + " ( " + fail.version + " )" for fail in failed_info
+    ]
+    
+    most_failed_packages = Counter(fail_list)
+    response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
+
+    if request.args.get('export') == 'json':
+        return make_response(jsonify(response))
+
+    return render_template('index.html', response=response)
+
 
 @application.after_request
 def inject_x_rate_headers(response):
