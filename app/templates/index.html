@@ -50,9 +50,8 @@
 		</div>
 
 		<script type="text/javascript">
-			func_os_user({{ os_users['x_values']|tojson}}, {{os_users['y_values']|tojson}});
-			func_failed_installs({{ most_failed_packages['x_values']|tojson}},
-				{{most_failed_packages['y_values']|tojson}});
+			func_os_user({{ response['os_users']|tojson}});
+			func_failed_installs({{ response['most_failed_packages']|tojson}});
 
 		</script>
 

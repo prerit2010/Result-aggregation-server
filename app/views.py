@@ -4,6 +4,7 @@ from flask import request, render_template
 from .models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 from .limiter import *
+from collections import Counter
 
 @application.errorhandler(500)
 def internal_error(error):
@@ -103,35 +104,23 @@ def default():
 
 @application.route('/view/')
 def data_view():
-    """chart for different os users"""
     user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
-    x_values = []
-    y_values = []
+    os_users = {}
     for user in user_info:
-        x_values.append(user.system)
-        y_values.append(user.count)
-    y_sum = sum(y_values)
-    y_percentage = []
-    for val in y_values:
-        y_percentage.append((float(val)/y_sum)*100)
-    os_users = {"x_values" : x_values, "y_values" : y_percentage}
-
-    """chart for most failed packages"""
+        os_users[user.system] = user.count
 
     failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version).all()
     fail_list = [
         fail.name + " ( " + fail.version + " )" for fail in failed_info
     ]
-    from collections import Counter
-    counts = Counter(fail_list)
-    x_val = []
-    y_val = []
-    for key in counts:
-        x_val.append(key)
-        y_val.append(counts[key])
-    most_failed_packages = {"x_values" : x_val, "y_values" : y_val}
+    
+    most_failed_packages = Counter(fail_list)
+    response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
 
-    return render_template('index.html', os_users=os_users, most_failed_packages=most_failed_packages)
+    if request.args.get('export') == 'json':
+        return make_response(jsonify(response))
+
+    return render_template('index.html', response=response)
 
 @application.after_request
 def inject_x_rate_headers(response):
