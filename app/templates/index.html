@@ -16,6 +16,17 @@
   					<h1>Installation Scripts Statistics</h1>
 				</div>
 			</div>
+
+			<div class="form-group">
+			 	<label for="sel1">Filter by workshop:</label>
+			  	<select class="form-control" id="sel1">
+			  		<option>Select Workshop</option>
+			    	{% for workshop in workshops%}
+			    		<option>{{workshop}}</option>
+			    	{% endfor %}
+			  	</select>
+			</div>
+			
 			<!-- Different OS USERS -->
 			<!-- ===================================================================== -->
 			<div class="row">
