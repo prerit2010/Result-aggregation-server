@@ -197,5 +197,11 @@ class TestCase(unittest.TestCase):
         assert user.email_id is not None
         assert user.workshop_id is not None
 
+    def test_get_view_all(self):
+        """Get request on 'view' endpoint"""
+        response = self.application.get('/view/')
+        self.assertEqual(response.status_code, 200)
+    
+
 if __name__ == '__main__':
     unittest.main()
