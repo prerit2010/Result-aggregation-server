@@ -127,7 +127,7 @@ def data_view():
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops)
+    return render_template('index.html', response=response, workshops=workshops, show_all=True)
 
 
 @application.route('/view/<workshop_id>/')
@@ -159,7 +159,7 @@ def data_view_by_workshop(workshop_id):
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops)
+    return render_template('index.html', response=response, workshops=workshops, show_all=False)
 
 
 @application.after_request

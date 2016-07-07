@@ -17,23 +17,35 @@
 				</div>
 			</div>
 
-			<div class="form-group">
-			 	<label for="sel1">Filter by workshop:</label>
-			  	<select class="form-control" id="sel1">
-			  		<option>Select Workshop</option>
-			    	{% for workshop in workshops%}
-			    		<option>{{workshop}}</option>
-			    	{% endfor %}
-			  	</select>
-			</div>
 			
+			<div class"row">
+				<div class="col-md-6">
+					<div class="form-group">
+			 			<label for="sel1">Filter by workshop:</label>
+			  			<select class="form-control" id="sel1" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
+			  				<option>Select Workshop</option>
+			    			{% for workshop in workshops%}
+			    				<option value="{{workshop}}">{{workshop}}</option>
+			    			{% endfor %}
+			  			</select>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<br />
+					{%if not show_all%}
+					<a href="/view/" class="btn btn-primary">Show for all workshops</a>
+					{% endif %}
+				</div>
+			</div>
+
 			<!-- Different OS USERS -->
 			<!-- ===================================================================== -->
 			<div class="row">
 				<div class="col-md-12">
 					<div class="panel panel-default">
             			<div class="panel-heading panel-heading-custom">
-               				<h3 class="panel-title">Percentage of different OS users</h3>
+               				<h3 class="panel-title">Number of different OS users</h3>
             			</div>
             			<div class="panel-body">
                				<div id="os_user" style="height: 400px"></div>
