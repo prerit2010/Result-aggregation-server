@@ -22,9 +22,10 @@ function func_os_user(os_user){
 function func_failed_installs(most_failed_packages){
 	var x_values = []
 	var y_values = []
-	for (var key in most_failed_packages) {
-    	x_values.push(key);
-    	y_values.push(most_failed_packages[key])
+	for(var i=0 ; i < most_failed_packages.length ; i++){
+		var failed_package = most_failed_packages[i]['name'] + ' (' + most_failed_packages[i]['version'] + ')';
+		x_values.push(failed_package);
+    	y_values.push(most_failed_packages[i]['count']);
 	}
 	var data = [
 		{

@@ -5,6 +5,7 @@ from .models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 from .limiter import *
 from collections import Counter
+import urllib.parse
 
 @application.errorhandler(500)
 def internal_error(error):
@@ -110,12 +111,12 @@ def data_view():
     for user in user_info:
         os_users[user.system] = user.count
 
-    failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version).all()
-    fail_list = [
-        fail.name + " ( " + fail.version + " )" for fail in failed_info
+    failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
+    most_failed_packages = [
+        {"name": fail.name, "version": fail.version, "count" : fail.count}
+        for fail in failed_info
     ]
-    
-    most_failed_packages = Counter(fail_list)
+
     response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
 
     if request.args.get('export') == 'json':
@@ -141,13 +142,13 @@ def data_view_by_workshop(workshop_id):
 
     failed_info = FailedInstalls.query.join(UserSystemInfo,
                     UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                    FailedInstalls.name, FailedInstalls.version).filter(
-                    UserSystemInfo.workshop_id==workshop_id)
-    fail_list = [
-        fail.name + " ( " + fail.version + " )" for fail in failed_info
+                    FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
+                    UserSystemInfo.workshop_id==workshop_id).group_by(FailedInstalls.name, FailedInstalls.version)
+    most_failed_packages = [
+        {"name": fail.name, "version": fail.version, "count" : fail.count}
+        for fail in failed_info
     ]
-    
-    most_failed_packages = Counter(fail_list)
+
     response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
 
     if request.args.get('export') == 'json':
@@ -161,6 +162,58 @@ def data_view_by_workshop(workshop_id):
 
     return render_template('index.html', response=response, workshops=workshops, show_all=False)
 
+@application.route('/view/detail/')
+def data_view_detail_package():
+    package_name = request.args.get('package_detail').split('|')[0]
+    version = request.args.get('package_detail').split('|')[1]
+    user_info = UserSystemInfo.query.join(FailedInstalls, 
+                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
+                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                    UserSystemInfo.system, UserSystemInfo.system_platform,
+                    UserSystemInfo.system_version, UserSystemInfo.machine,
+                    UserSystemInfo.python_version).filter(
+                    FailedInstalls.name==package_name, FailedInstalls.version==version)
+    distribution_name = []; distribution_version = []; system = []; system_platform = [];
+    system_version = []; machine = []; python_version = [];
+    for user in user_info:
+        distribution_name.append(user.distribution_name)
+        distribution_version.append(user.distribution_version)
+        system.append(user.system)
+        system_platform.append(user.system_platform)
+        system_version.append(user.system_version)
+        machine.append(user.machine)
+        python_version.append(user.python_version)
+
+    distribution_name = filter(None,distribution_name)
+    distribution_version = filter(None,distribution_version)
+    system = filter(None,system)
+    system_platform = filter(None,system_platform)
+    system_version = filter(None,system_version)
+    machine = filter(None,machine)
+    python_version = filter(None,python_version)
+
+    distribution_name = Counter(distribution_name)
+    distribution_version = Counter(distribution_version)
+    system = Counter(system)
+    system_platform = Counter(system_platform)
+    system_version = Counter(system_version)
+    machine = Counter(machine)
+    python_version = Counter(python_version)
+
+    response = {
+        "package_name" : package_name,
+        "package_version" : version,
+        "user_system_info" : {
+            "distribution_name" : distribution_name, 
+            "distribution_version" : distribution_version,
+            "system" : system,
+            "system_version" : system_version,
+            "system_platform" : system_platform,
+            "machine" : machine,
+            "python_version" : python_version
+        }
+    }
+    return make_response(jsonify(response))
 
 @application.after_request
 def inject_x_rate_headers(response):

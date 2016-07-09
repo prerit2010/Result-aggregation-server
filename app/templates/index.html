@@ -65,9 +65,24 @@
             			</div>
             			<div class="panel-body">
                				<div id="failed_package"></div>
+               				<div class="form-group">
+			 			<label for="sel1">More details :</label>
+			  			<form action="/view/detail/" method="GET">
+				  			<select class="form-control" id="sel1" name="package_detail" onchange="this.form.submit()">
+				  				<option>Select Package</option>
+				    			{% for failed_package in response['most_failed_packages'] %}
+				    				<option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+				    			{% endfor %}
+				  			</select>
+				  		</form>
+					</div>
             			</div>
+            			<div class="col-md-12">
+					
+				</div>
         			</div>
     			</div>
+
 			</div>
 			<!-- ===================================================================== -->
 		</div>
