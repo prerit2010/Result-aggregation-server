@@ -160,19 +160,32 @@ def data_view_by_workshop(workshop_id):
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops, show_all=False)
+    return render_template('index.html', response=response, workshops=workshops,
+                         show_all=False, workshop_name=workshop_id)
 
 @application.route('/view/detail/')
 def data_view_detail_package():
     package_name = request.args.get('package_detail').split('|')[0]
     version = request.args.get('package_detail').split('|')[1]
-    user_info = UserSystemInfo.query.join(FailedInstalls, 
+    all_workshops = request.args.get('all_workshops')
+    workshop_name = request.args.get('workshop_name')
+    if all_workshops:
+        user_info = UserSystemInfo.query.join(FailedInstalls, 
                     UserSystemInfo.id==FailedInstalls.user_id).add_columns(
                     UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                     UserSystemInfo.system, UserSystemInfo.system_platform,
                     UserSystemInfo.system_version, UserSystemInfo.machine,
                     UserSystemInfo.python_version).filter(
                     FailedInstalls.name==package_name, FailedInstalls.version==version)
+    else:
+        user_info = UserSystemInfo.query.join(FailedInstalls, 
+                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
+                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                    UserSystemInfo.system, UserSystemInfo.system_platform,
+                    UserSystemInfo.system_version, UserSystemInfo.machine,
+                    UserSystemInfo.python_version).filter(
+                    FailedInstalls.name==package_name, FailedInstalls.version==version, UserSystemInfo.workshop_id==workshop_name)
+
     distribution_name = []; distribution_version = []; system = []; system_platform = [];
     system_version = []; machine = []; python_version = [];
     for user in user_info:
@@ -184,21 +197,13 @@ def data_view_detail_package():
         machine.append(user.machine)
         python_version.append(user.python_version)
 
-    distribution_name = filter(None,distribution_name)
-    distribution_version = filter(None,distribution_version)
-    system = filter(None,system)
-    system_platform = filter(None,system_platform)
-    system_version = filter(None,system_version)
-    machine = filter(None,machine)
-    python_version = filter(None,python_version)
-
-    distribution_name = Counter(distribution_name)
-    distribution_version = Counter(distribution_version)
-    system = Counter(system)
-    system_platform = Counter(system_platform)
-    system_version = Counter(system_version)
-    machine = Counter(machine)
-    python_version = Counter(python_version)
+    distribution_name = Counter(filter(None,distribution_name))
+    distribution_version = Counter(filter(None,distribution_version))
+    system = Counter(filter(None,system))
+    system_platform = Counter(filter(None,system_platform))
+    system_version = Counter(filter(None,system_version))
+    machine = Counter(filter(None,machine))
+    python_version = Counter(filter(None,python_version))
 
     response = {
         "package_name" : package_name,

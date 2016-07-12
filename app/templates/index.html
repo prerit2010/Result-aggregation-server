@@ -68,12 +68,25 @@
                				<div class="form-group">
 			 			<label for="sel1">More details :</label>
 			  			<form action="/view/detail/" method="GET">
-				  			<select class="form-control" id="sel1" name="package_detail" onchange="this.form.submit()">
+				  			<select class="form-control" id="sel1" name="package_detail">
 				  				<option>Select Package</option>
 				    			{% for failed_package in response['most_failed_packages'] %}
 				    				<option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
 				    			{% endfor %}
 				  			</select>
+				  			<div class="checkbox">
+				  				{% if not show_all%}
+				  			  		<label><input type="checkbox" name="all_workshops" value="True">All workshops</label>
+				  			  	{% else %}
+				  			  		<input type="hidden" value="True" name="all_workshops">
+				  			  	{% endif %}
+
+				  			</div>
+				  			{% if not show_all %}
+				  				<input type="hidden" value="{{workshop_name}}" name="workshop_name">
+				  			{% endif %}
+
+				  			<input type="submit" class="btn btn-primary" />
 				  		</form>
 					</div>
             			</div>
