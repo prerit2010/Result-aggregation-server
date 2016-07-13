@@ -1,111 +1,81 @@
-<HTML>
-	<HEAD>
-		<TITLE>Installation Script server</TITLE>
-		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>	
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-		<script src="{{ url_for('static', filename='js/plot.js') }}"></script>
-	</HEAD>
-	<BODY>
-		<div class="container">
-			<div class"row">
-				<div class="page-header">
-  					<h1>Installation Scripts Statistics</h1>
-				</div>
+{% extends "base.html" %}
+
+{% block content %}
+	<div class"row">
+		<div class="col-md-6">
+			<div class="form-group">
+	 			<label for="sel1">Filter by workshop:</label>
+	  			<select class="form-control" id="sel1" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
+	  				<option>Select Workshop</option>
+	    			{% for workshop in workshops%}
+	    				<option value="{{workshop}}">{{workshop}}</option>
+	    			{% endfor %}
+	  			</select>
 			</div>
-
-			
-			<div class"row">
-				<div class="col-md-6">
-					<div class="form-group">
-			 			<label for="sel1">Filter by workshop:</label>
-			  			<select class="form-control" id="sel1" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
-			  				<option>Select Workshop</option>
-			    			{% for workshop in workshops%}
-			    				<option value="{{workshop}}">{{workshop}}</option>
-			    			{% endfor %}
-			  			</select>
-					</div>
-				</div>
-
-				<div class="col-md-6">
-					<br />
-					{%if not show_all%}
-					<a href="/view/" class="btn btn-primary">Show for all workshops</a>
-					{% endif %}
-				</div>
-			</div>
-
-			<!-- Different OS USERS -->
-			<!-- ===================================================================== -->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-            			<div class="panel-heading panel-heading-custom">
-               				<h3 class="panel-title">Number of different OS users</h3>
-            			</div>
-            			<div class="panel-body">
-               				<div id="os_user" style="height: 400px"></div>
-            			</div>
-        			</div>
-    			</div>
-			</div>
-			<!-- ===================================================================== -->
-
-			<!-- MOST failed packages -->
-			<!-- ===================================================================== -->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-            			<div class="panel-heading panel-heading-custom">
-               				<h3 class="panel-title">Most Failed Packages</h3>
-            			</div>
-            			<div class="panel-body">
-               				<div id="failed_package"></div>
-               				<div class="form-group">
-			 			<label for="sel1">More details :</label>
-			  			<form action="/view/detail/" method="GET">
-				  			<select class="form-control" id="sel1" name="package_detail">
-				  				<option>Select Package</option>
-				    			{% for failed_package in response['most_failed_packages'] %}
-				    				<option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
-				    			{% endfor %}
-				  			</select>
-				  			<div class="checkbox">
-				  				{% if not show_all%}
-				  			  		<label><input type="checkbox" name="all_workshops" value="True">All workshops</label>
-				  			  	{% else %}
-				  			  		<input type="hidden" value="True" name="all_workshops">
-				  			  	{% endif %}
-
-				  			</div>
-				  			{% if not show_all %}
-				  				<input type="hidden" value="{{workshop_name}}" name="workshop_name">
-				  			{% endif %}
-
-				  			<input type="submit" class="btn btn-primary" />
-				  		</form>
-					</div>
-            			</div>
-            			<div class="col-md-12">
-					
-				</div>
-        			</div>
-    			</div>
-
-			</div>
-			<!-- ===================================================================== -->
 		</div>
+		<div class="col-md-6">
+			<br />
+			{%if not show_all%}
+			<a href="/view/" class="btn btn-primary">Show for all workshops</a>
+			{% endif %}
+		</div>
+	</div>
+	<div class="row col-md-12">
+		<H2 class="text-center">{{workshop_name}}</H2>
+	</div>
+	<!-- Different OS USERS -->
+	<!-- ===================================================================== -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+	         			<div class="panel-heading panel-heading-custom">
+	            				<h3 class="panel-title">Number of different OS users</h3>
+	         			</div>
+	         			<div class="panel-body">
+	            				<div id="os_user" style="height: 400px"></div>
+	         			</div>
+	     			</div>
+	 			</div>
+	</div>
+	<!-- ===================================================================== -->
 
-		<script type="text/javascript">
-			func_os_user({{ response['os_users']|tojson}});
-			func_failed_installs({{ response['most_failed_packages']|tojson}});
+	<!-- MOST failed packages -->
+	<!-- ===================================================================== -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+          			<div class="panel-heading panel-heading-custom">
+             				<h3 class="panel-title">Most Failed Packages</h3>
+          			</div>
+          			<div class="panel-body">
+             				<div id="failed_package"></div>
+             				<div class="form-group">
+	 			<label for="sel1">More details :</label>
+	  			<form action="/view/detail/" method="GET">
+		  			<select class="form-control" id="sel1" name="package_detail">
+		  				<option>Select Package</option>
+		    			{% for failed_package in response['most_failed_packages'] %}
+				    		<option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+				    			{% endfor %}
+				  	</select>
+					<div class="checkbox">
+		  				{% if not show_all%}																				  			  		<label><input type="checkbox" name="all_workshops" value="True">All workshops</label>
+				  		{% else %}
+				  	  		<input type="hidden" value="True" name="all_workshops">
+					  	{% endif %}
+				  	</div>
+					{% if not show_all %}
+		  				<input type="hidden" value="{{workshop_name}}" name="workshop_name">
+		  			{% endif %}
 
-		</script>
+					<input type="submit" class="btn btn-primary" />
+		  		</form>
+		  	</div>
+  		</div>
+  	</div>
 
-	</BODY>
-	
-</HTML>
+	<script type="text/javascript">
+		func_os_user({{ response['os_users']|tojson}});
+		func_failed_installs({{ response['most_failed_packages']|tojson}});
+	</script>
+{% endblock %}
