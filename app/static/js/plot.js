@@ -61,9 +61,12 @@ function func_python_users(python_version){
 		var layout = {
     		title: '',
     		showlegend: false,
-    		margin:{
-    			b:200
-  			}
+    		xaxis : {
+    			title : 'Python versions'
+    		},
+    		yaxis : {
+    			title : 'Number of users'
+    		}
 		};
 		Plotly.newPlot('python_users', data, layout, {displayModeBar: false});
 
