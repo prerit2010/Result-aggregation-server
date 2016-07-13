@@ -218,7 +218,10 @@ def data_view_detail_package():
             "python_version" : python_version
         }
     }
-    return make_response(jsonify(response))
+    if request.args.get('export') == 'json':
+        return make_response(jsonify(response))
+
+    return render_template('details.html', data=response)
 
 @application.after_request
 def inject_x_rate_headers(response):
