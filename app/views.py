@@ -117,6 +117,8 @@ def data_view():
         for fail in failed_info
     ]
 
+    most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
+
     response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
 
     if request.args.get('export') == 'json':
@@ -148,6 +150,8 @@ def data_view_by_workshop(workshop_id):
         {"name": fail.name, "version": fail.version, "count" : fail.count}
         for fail in failed_info
     ]
+
+    most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
 
     response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
 
