@@ -29,16 +29,17 @@ function func_failed_installs(most_failed_packages){
 	}
 	var data = [
 		{
-			x: x_values,
-			y: y_values,
-			type: 'bar'
+			x:  y_values,
+			y: x_values,
+			type: 'bar',
+			orientation : 'h'
 		}
 		];
 		var layout = {
     		title: '',
     		showlegend: false,
     		margin:{
-    			b:200
+    			l:500
   			}
 		};
 		Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
