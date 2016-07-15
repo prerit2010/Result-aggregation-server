@@ -171,6 +171,7 @@ def data_view_by_workshop(workshop_id):
 def data_view_detail_package():
     package_name = request.args.get('package_detail').split('|')[0]
     version = request.args.get('package_detail').split('|')[1]
+    print(version)
     all_workshops = request.args.get('all_workshops')
     workshop_name = request.args.get('workshop_name')
     if all_workshops:
