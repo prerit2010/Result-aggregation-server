@@ -112,3 +112,32 @@ function func_os_user_for_package(system){
 		Plotly.newPlot('os_user_by_package', data, layout, {displayModeBar: false});
 
 }
+
+
+function func_os_user_dist_for_package(system){
+	var x_values = []
+	var y_values = []
+	for (var key in system) {
+    	x_values.push(key);
+    	y_values.push(system[key]);
+	}
+	var data = [
+		{
+			x: x_values,
+			y: y_values,
+			type: 'bar'
+		}
+		];
+		var layout = {
+    		title: '',
+    		showlegend: false,
+    		xaxis : {
+    			title : 'Distributions'
+    		},
+    		yaxis : {
+    			title : 'Number of users'
+    		}
+		};
+		Plotly.newPlot('os_user_dist_by_package', data, layout, {displayModeBar: false});
+
+}

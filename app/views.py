@@ -192,10 +192,12 @@ def data_view_detail_package():
                     FailedInstalls.name==package_name, FailedInstalls.version==version, UserSystemInfo.workshop_id==workshop_name)
 
     distribution_name = []; distribution_version = []; system = []; system_platform = [];
-    system_version = []; machine = []; python_version = [];
+    system_version = []; machine = []; python_version = []; distribution_name_version = [];
     for user in user_info:
         distribution_name.append(user.distribution_name)
         distribution_version.append(user.distribution_version)
+        if user.distribution_version is not None and user.distribution_name is not None:
+            distribution_name_version.append(user.distribution_name + " " + user.distribution_version)
         system.append(user.system)
         system_platform.append(user.system_platform)
         system_version.append(user.system_version)
@@ -204,6 +206,8 @@ def data_view_detail_package():
 
     distribution_name = Counter(filter(None,distribution_name))
     distribution_version = Counter(filter(None,distribution_version))
+    distribution_version = Counter(filter(None,distribution_version))
+    distribution_name_version = Counter(filter(None,distribution_name_version))
     system = Counter(filter(None,system))
     system_platform = Counter(filter(None,system_platform))
     system_version = Counter(filter(None,system_version))
@@ -216,6 +220,7 @@ def data_view_detail_package():
         "user_system_info" : {
             "distribution_name" : distribution_name, 
             "distribution_version" : distribution_version,
+            "distribution_name_version" : distribution_name_version,
             "system" : system,
             "system_version" : system_version,
             "system_platform" : system_platform,
