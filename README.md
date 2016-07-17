@@ -41,6 +41,12 @@ Everytime there are some schematic changes in the database, run the following 2 
 python manage.py db migrate
 python manage.py db upgrade
 ```
+
+* If you want to add a sample database for testing :
+```
+python manage.py import_db
+```
+
 * Test the API:
 
 ```
