@@ -14,10 +14,19 @@ def internal_error(error):
 @application.route('/installation_data/', methods=['POST'])
 @ratelimit(limit=500, per=60*60)
 def installation_data():
+    """
+    This endpoint accepts the data from installation test scripts and stores it on the database.
+    """
+    
     user_system_info = request.json.get('user_system_info')
     successful_installs = request.json.get('successful_installs')
     failed_installs = request.json.get('failed_installs')
     unique_user_id = request.json.get('unique_user_id')
+    """
+    Check whether the unique_user_id is received in the request or not.
+    If not, generate a new id.
+    """
+
     if unique_user_id is None:
         unique_user_id = str(uuid.uuid4())
         message = "new id generated"
@@ -27,6 +36,7 @@ def installation_data():
             user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
     else:
         message = "pushed data with same id"
+
         """ Check whether the received unique id has already an associated record 
             in the database, or is it accidently changed by the user.
         """
@@ -34,6 +44,9 @@ def installation_data():
         if user_info is None:
             unique_user_id = str(uuid.uuid4())
             message = "new id generated"
+    """
+    Get the system information from 'user_system_info', a dictionary received in the request.
+    """
 
     distribution_name = user_system_info.get('distribution_name')
     distribution_version = user_system_info.get('distribution_version')
@@ -45,9 +58,16 @@ def installation_data():
     workshop_id = user_system_info.get('workshop_id')
     email_id = user_system_info.get('email_id')
     # uname  = user_system_info.get('uname')
-
+    """
+    Everytime an attempt is made, be it from a new user, or from the same user,
+    log the attempt with the user's unique_user_id
+    """
     attempt = Attempts(unique_user_id=unique_user_id)
-   
+    
+    """
+    Create lists of objects for failed and succesfully installed packages, so that they can be added
+    using the user_id as foreign key.
+    """
     success_objects_list = [
         SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version')) 
             for succ_install in successful_installs 
@@ -58,6 +78,11 @@ def installation_data():
              error_description=fail_install.get('error_description')) 
             for fail_install in failed_installs
     ]
+
+    """
+    Check whether their already exists a record with this unique_user_id.
+    If yes, update the information, else, create a new record.
+    """
     
     user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
     if user_info is None:
@@ -73,28 +98,39 @@ def installation_data():
         user_info.system = system
         user_info.machine = machine
         user_info.system_platform = system_platform
+        """email_id and workshop_id are updated only when these fields are not None in the request.
+        As otherwise None will be overwritten to previously added workshop_id and email_id in case of
+        second attempt.
+        """
         if email_id is not None:
             user_info.email_id = email_id
         if workshop_id is not None:
             user_info.workshop_id = workshop_id
         user_info.python_version = python_version
         user_info.unique_user_id = unique_user_id
-
+    """
+    Add the objects list created above to user_info aand attempt objects to reference the foreign key for both.
+    """
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
     attempt.successful_installs.extend(success_objects_list)
     attempt.failed_installs.extend(failed_objects_list)
+    
     db.session.add(attempt)
     db.session.add(user_info)
     db.session.add_all(success_objects_list)
     db.session.add_all(failed_objects_list)
     
+
     try:
         db.session.commit()
     except:
         summary = {"status": "Something bad happened"}
     else:
         summary = {"status": "Successful"}
+    """
+    Return the key and message, whether a new unique_user_id was created or previous unique_user_id was used.
+    """
     summary['message'] = message
     response = {'key': unique_user_id, 'summary' : summary}
     return make_response(jsonify(response))
@@ -196,7 +232,7 @@ def data_view_detail_package():
     for user in user_info:
         distribution_name.append(user.distribution_name)
         distribution_version.append(user.distribution_version)
-        if user.distribution_version is not None and user.distribution_name is not None:
+        if user.distribution_version and user.distribution_name:
             distribution_name_version.append(user.distribution_name + " " + user.distribution_version)
         system.append(user.system)
         system_platform.append(user.system_platform)
