@@ -142,6 +142,12 @@ def default():
 
 @application.route('/view/')
 def data_view():
+    """
+    This endpoint returns the data for all the worlshops.
+    """
+    """
+    Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
+    """
     user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
     os_users = {}
     for user in user_info:
@@ -207,18 +213,8 @@ def data_view_by_workshop(workshop_id):
 def data_view_detail_package():
     package_name = request.args.get('package_detail').split('|')[0]
     version = request.args.get('package_detail').split('|')[1]
-    print(version)
-    all_workshops = request.args.get('all_workshops')
     workshop_name = request.args.get('workshop_name')
-    if all_workshops:
-        user_info = UserSystemInfo.query.join(FailedInstalls, 
-                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                    UserSystemInfo.system, UserSystemInfo.system_platform,
-                    UserSystemInfo.system_version, UserSystemInfo.machine,
-                    UserSystemInfo.python_version).filter(
-                    FailedInstalls.name==package_name, FailedInstalls.version==version)
-    else:
+    if workshop_name:
         user_info = UserSystemInfo.query.join(FailedInstalls, 
                     UserSystemInfo.id==FailedInstalls.user_id).add_columns(
                     UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
@@ -226,7 +222,15 @@ def data_view_detail_package():
                     UserSystemInfo.system_version, UserSystemInfo.machine,
                     UserSystemInfo.python_version).filter(
                     FailedInstalls.name==package_name, FailedInstalls.version==version, UserSystemInfo.workshop_id==workshop_name)
-
+    else:    
+        user_info = UserSystemInfo.query.join(FailedInstalls, 
+                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
+                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                    UserSystemInfo.system, UserSystemInfo.system_platform,
+                    UserSystemInfo.system_version, UserSystemInfo.machine,
+                    UserSystemInfo.python_version).filter(
+                    FailedInstalls.name==package_name, FailedInstalls.version==version)
+        
     distribution_name = []; distribution_version = []; system = []; system_platform = [];
     system_version = []; machine = []; python_version = []; distribution_name_version = [];
     for user in user_info:
