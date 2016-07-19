@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, make_response
 from app import application, db
-from flask import request, render_template
+from flask import request, render_template, redirect, url_for
 from .models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 from .limiter import *
@@ -172,11 +172,17 @@ def data_view():
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops, show_all=True)
+    return render_template('index.html', response=response, workshops=workshops,
+                            workshop_name="All workshops", show_all=True)
 
 
 @application.route('/view/<workshop_id>/')
 def data_view_by_workshop(workshop_id):
+    """
+    If All workshops is selected as an option, redirect to '/view/'
+    """
+    if workshop_id == "All workshops":
+        return redirect(url_for('data_view'))
     user_info = db.session.query(UserSystemInfo.system, 
                     db.func.count().label("count")).filter_by(workshop_id=workshop_id
                     ).group_by(UserSystemInfo.system).all()
@@ -271,7 +277,7 @@ def data_view_detail_package():
     if request.args.get('export') == 'json':
         return make_response(jsonify(response))
 
-    return render_template('details.html', data=response)
+    return render_template('details.html', data=response, workshop_name=workshop_name)
 
 @application.after_request
 def inject_x_rate_headers(response):

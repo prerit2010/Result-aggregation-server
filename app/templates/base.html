@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/plot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/call.js') }}"></script>
   </HEAD>
-  <BODY>
+  <BODY onload="SelectElement('{{workshop_name}}');">
     <div class="container">
       <div class"row">
         <div class="page-header">
