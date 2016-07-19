@@ -197,5 +197,29 @@ class TestCase(unittest.TestCase):
         assert user.email_id is not None
         assert user.workshop_id is not None
 
+    def test_get_view_all(self):
+        """Get request on 'view' endpoint"""
+        response = self.application.get('/view/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_view_by_workshop(self):
+        unique_user_id = str(uuid.uuid4())
+        u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
+                            system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
+                            system="Linux", machine="x86_64",
+                            system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
+                            python_version="2.7.10", unique_user_id=unique_user_id, workshop_id="test_workshop")
+        db.session.add(u)
+        db.session.commit()
+        count = UserSystemInfo.query.count()
+        self.assertEqual(count, 1)
+        response = self.application.get('/view/test_workshop/')
+        self.assertEqual(response.status_code, 200)
+        response = self.application.get('/view/test_workshop/?export=json')
+        self.assertEqual(response.status_code, 200)
+        message = json.loads(response.data.decode('utf-8'))
+        assert 'os_users' in message
+        assert 'most_failed_packages' in message
+
 if __name__ == '__main__':
     unittest.main()
