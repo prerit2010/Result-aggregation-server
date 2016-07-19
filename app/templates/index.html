@@ -1,61 +1,126 @@
-<HTML>
-	<HEAD>
-		<TITLE>Installation Script server</TITLE>
-		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>	
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-		<script src="{{ url_for('static', filename='js/plot.js') }}"></script>
-	</HEAD>
-	<BODY>
-		<div class="container">
-			<div class"row">
-				<div class="page-header">
-  					<h1>Installation Scripts Statistics</h1>
-				</div>
-			</div>
-			<!-- Different OS USERS -->
-			<!-- ===================================================================== -->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-            			<div class="panel-heading panel-heading-custom">
-               				<h3 class="panel-title">Percentage of different OS users</h3>
-            			</div>
-            			<div class="panel-body">
-               				<div id="os_user" style="height: 400px"></div>
-            			</div>
-        			</div>
-    			</div>
-			</div>
-			<!-- ===================================================================== -->
+{% extends "base.html" %}
 
-			<!-- MOST failed packages -->
-			<!-- ===================================================================== -->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="panel panel-default">
-            			<div class="panel-heading panel-heading-custom">
-               				<h3 class="panel-title">Most Failed Packages</h3>
-            			</div>
-            			<div class="panel-body">
-               				<div id="failed_package"></div>
-            			</div>
-        			</div>
-    			</div>
-			</div>
-			<!-- ===================================================================== -->
-		</div>
+{% block content %}
+  <div class"row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="sel1">Filter by workshop:</label>
+          <select class="form-control" id="sel1" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
+            <option>Select Workshop</option>
+            {% for workshop in workshops%}
+              <option value="{{workshop}}">{{workshop}}</option>
+            {% endfor %}
+          </select>
+      </div>
+    </div>
+    <div class="col-md-6">
+    	<div class="form-group">
+    	  <label for="sel1">Filter by failed package :</label>
+    	  <form action="/view/detail/" method="GET">
+    	    <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
+    	      <option>Select Package</option>
+    	      {% for failed_package in response['most_failed_packages'] %}
+    	        <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+    	      {% endfor %}
+    	    </select>
+    	    {% if not show_all %}
+    	      <input type="hidden" value="{{workshop_name}}" name="workshop_name">
+    	    {% endif %}
+    	    
+    	  </form>
+    	</div>
+    </div>
+    <div class="col-md-6">
+      <br />
+      {%if not show_all%}
+      <a href="/view/" class="btn btn-primary">Show for all workshops</a>
+      {% endif %}
+    </div>
+  </div>
 
-		<script type="text/javascript">
-			func_os_user({{ os_users['x_values']|tojson}}, {{os_users['y_values']|tojson}});
-			func_failed_installs({{ most_failed_packages['x_values']|tojson}},
-				{{most_failed_packages['y_values']|tojson}});
+  <div class="row col-md-12">
+    <H2 class="text-center">{{workshop_name}}</H2>
+  </div>
 
-		</script>
+  <!-- ===================================================================== -->
 
-	</BODY>
-	
-</HTML>
+  <!-- MOST failed packages -->
+  <!-- ===================================================================== -->
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Most Failed Packages</b></h3>
+        </div>
+        <div class="panel-body">
+          <div id="failed_package"></div>
+          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Show in Tabular form</button>
+          <div class="collapse" id="collapseExample">
+            <table class="table table-hover table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Version</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for failed_package in response['most_failed_packages'] %}
+                  <tr>
+                    <td>{{failed_package['name']}}</td>
+                    <td>{{failed_package['version']}}</td>
+                    <td>{{failed_package['count']}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>             
+          </div>
+          <br /> <br />
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <!-- Different OS USERS -->
+  <!-- ===================================================================== -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading panel-heading-custom">
+          <h3 class="panel-title text-center"><b>Operating systems</b></h3>
+        </div>
+        <div class="panel-body">
+          <div id="os_user" style="height: 400px"></div>
+          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_os_user" aria-expanded="false" aria-controls="collapse_os_user">Show in Tabular form</button>
+          <div class="collapse" id="collapse_os_user">
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Operating System</th>
+                  <th>Number of users</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for key, value in response['os_users'].items() %}
+                  <tr>    
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>          
+          </div>
+          <br /> <br />
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript">
+    func_os_user({{ response['os_users']|tojson}});
+    func_failed_installs({{ response['most_failed_packages']|tojson}});
+  </script>
+{% endblock %}

@@ -1,5 +1,11 @@
 .panel-default > .panel-heading-custom{
   background-image: none;
-  background-color: #cf5b95;
+  background-color: #979A9A;
   color: #ffffff;
+}
+
+.btn-default {
+  color: #333;
+  background-color: #CCD1D1;
+  border-color: #ccc;
 }
