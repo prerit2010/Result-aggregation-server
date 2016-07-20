@@ -27,8 +27,8 @@ def import_db():
         else:
             sys.exit(0)
     print("\nImporting sample data....\n")
-    f = open('sample.sql', 'r')
-    sql = f.read()
+    with open('sample.sql', 'r') as f:
+        sql = f.read()
     con.executescript(sql)
     con.close()
     print("\nSample data imported successfully")
