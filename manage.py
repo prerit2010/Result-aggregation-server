@@ -2,7 +2,7 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from config import SAMPLE_DATABASE_URI
 from app import application, db
-import sqlite3, sys, argparse
+import sqlite3, sys
 import os.path
  
 migrate = Migrate(application, db)
