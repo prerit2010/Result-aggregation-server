@@ -11,6 +11,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def import_db():
+    tables = ['user_system_info', 'successful_installs', 'failed_installs' ,'attempts']
     try:
         con = sqlite3.connect(SAMPLE_DATABASE_URI)
     except:
@@ -21,10 +22,8 @@ def import_db():
     if result:
         choice = input("Database already contains some data. Do you wish to delete all data and overwrite? (y/n) :")
         if choice == 'y' or choice == 'Y':
-            con.execute("DELETE FROM user_system_info")
-            con.execute("DELETE FROM successful_installs")
-            con.execute("DELETE FROM failed_installs")
-            con.execute("DELETE FROM attempts")   
+            for table in tables:
+                con.execute("DELETE FROM " + table)
         else:
             sys.exit(0)
     print("\nImporting sample data....\n")
