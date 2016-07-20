@@ -5,8 +5,8 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="sel1">Filter by workshop:</label>
-          <select class="form-control" id="sel1" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
-            <option>Select Workshop</option>
+          <select class="form-control" id="sel_workshop" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
+            <option value="All workshops">All workshops</option>
             {% for workshop in workshops%}
               <option value="{{workshop}}">{{workshop}}</option>
             {% endfor %}
@@ -18,7 +18,7 @@
     	  <label for="sel1">Filter by failed package :</label>
     	  <form action="/view/detail/" method="GET">
     	    <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
-    	      <option>Select Package</option>
+    	      <option>None</option>
     	      {% for failed_package in response['most_failed_packages'] %}
     	        <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
     	      {% endfor %}
@@ -29,12 +29,6 @@
     	    
     	  </form>
     	</div>
-    </div>
-    <div class="col-md-6">
-      <br />
-      {%if not show_all%}
-      <a href="/view/" class="btn btn-primary">Show for all workshops</a>
-      {% endif %}
     </div>
   </div>
 

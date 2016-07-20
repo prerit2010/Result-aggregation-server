@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, make_response
 from app import application, db
-from flask import request, render_template
+from flask import request, render_template, redirect, url_for
 from .models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
 import uuid
 from .limiter import *
@@ -44,10 +44,8 @@ def installation_data():
         if user_info is None:
             unique_user_id = str(uuid.uuid4())
             message = "new id generated"
-    """
-    Get the system information from 'user_system_info', a dictionary received in the request.
-    """
 
+    #Get the system information from 'user_system_info', a dictionary received in the request.
     distribution_name = user_system_info.get('distribution_name')
     distribution_version = user_system_info.get('distribution_version')
     system_version = user_system_info.get('system_version')
@@ -145,9 +143,8 @@ def data_view():
     """
     This endpoint returns the data for all the worlshops.
     """
-    """
-    Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
-    """
+
+    #Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
     user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
     os_users = {}
     for user in user_info:
@@ -172,11 +169,19 @@ def data_view():
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops, show_all=True)
+    return render_template('index.html', response=response, workshops=workshops,
+                            workshop_name="All workshops", show_all=True)
 
 
 @application.route('/view/<workshop_id>/')
 def data_view_by_workshop(workshop_id):
+    """
+    This endpoint returns the data for a specific workshop.
+    """
+    
+    #If All workshops is selected as an option, redirect to '/view/'
+    if workshop_id == "All workshops":
+        return redirect(url_for('data_view'))
     user_info = db.session.query(UserSystemInfo.system, 
                     db.func.count().label("count")).filter_by(workshop_id=workshop_id
                     ).group_by(UserSystemInfo.system).all()
@@ -200,6 +205,7 @@ def data_view_by_workshop(workshop_id):
     if request.args.get('export') == 'json':
         return make_response(jsonify(response))
 
+    #Get a list of all the workshops
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
     workshops = [
         user.workshop_id for user in user_info 
@@ -271,7 +277,7 @@ def data_view_detail_package():
     if request.args.get('export') == 'json':
         return make_response(jsonify(response))
 
-    return render_template('details.html', data=response)
+    return render_template('details.html', data=response, workshop_name=workshop_name)
 
 @application.after_request
 def inject_x_rate_headers(response):

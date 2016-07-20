@@ -9,6 +9,16 @@
     <div class="col-md-6">
       <H3><b>Version :</b> {{data['package_version']}}</H3>
     </div>
+    
+    <div class="col-md-12">
+      {% if workshop_name%}
+        <H3><b>Workshop :</b> {{workshop_name}}</H3>
+      {% else %}
+        <H3><b>Workshop :</b> All workshops</H3>
+      {% endif %}
+    </div>
+    
+
   </div>
   
   <div class="row">
