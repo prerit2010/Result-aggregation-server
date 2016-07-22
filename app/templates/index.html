@@ -32,8 +32,24 @@
     </div>
   </div>
 
-  <div class="row col-md-12">
-    <H2 class="text-center">{{workshop_name}}</H2>
+  <div class="row">
+    <div class="col-md-6">
+      <H2>{{workshop_name}}</H2>
+    </div>
+    <div class="col-md-6">
+      <label>Filter by attempts:</label>
+      {% if not show_all %}
+        <form action="/view/{{workshop_name}}" method="GET">
+      {% else %}
+        <form action="/view/" method="GET">
+      {% endif %}
+          {% if all_attempts == "on" %}
+            <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" />
+          {% else %}
+            <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" />
+          {% endif %}
+        </form>
+    </div>
   </div>
 
   <!-- ===================================================================== -->
