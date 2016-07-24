@@ -64,6 +64,7 @@
             <h3 class="panel-title text-center"><b>Most Failed Packages</b></h3>
         </div>
         <div class="panel-body">
+          <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
           <div id="failed_package"></div>
           <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Show in Tabular form</button>
           <div class="collapse" id="collapseExample">
@@ -131,6 +132,13 @@
   
   <script type="text/javascript">
     func_os_user({{ response['os_users']|tojson}});
+    function failed_packages_toggle(){
+      var optn = document.getElementById('toggle_failed_packages').checked;
+      if(optn == true)
+        func_failed_installs_all({{ response['most_failed_packages']|tojson}});
+      else
+        func_failed_installs({{ response['most_failed_packages']|tojson}});
+    }
     func_failed_installs({{ response['most_failed_packages']|tojson}});
   </script>
 {% endblock %}
