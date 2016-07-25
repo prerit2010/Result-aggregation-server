@@ -64,7 +64,15 @@
             <h3 class="panel-title text-center"><b>Most Failed Packages</b></h3>
         </div>
         <div class="panel-body">
+          <div class="row">
+          <div class="col-md-6 col-md-offset-2">
           <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
+          </div>
+          <div class="col-md-4 pull-right">
+            <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
+            <p><b>Zoom out: </b>Double click on the graph</p> 
+          </div>
+        </div>
           <div id="failed_package"></div>
           <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Show in Tabular form</button>
           <div class="collapse" id="collapseExample">
