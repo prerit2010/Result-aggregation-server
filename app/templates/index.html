@@ -103,6 +103,51 @@
   </div>
 
   <hr>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Most Failed Package Names</b></h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+          <div class="col-md-6 col-md-offset-2">
+          <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
+          </div>
+          <div class="col-md-4 pull-right">
+            <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
+            <p><b>Zoom out: </b>Double click on the graph</p> 
+          </div>
+        </div>
+          <div id="failed_package_names"></div>
+          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Show in Tabular form</button>
+          <div class="collapse" id="collapseExample">
+            <table class="table table-hover table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for failed_package in response['most_failed_package_names'] %}
+                  <tr>
+                    <td>{{failed_package['name']}}</td>
+                    <td>{{failed_package['count']}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>             
+          </div>
+          <br /> <br />
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
   <!-- Different OS USERS -->
   <!-- ===================================================================== -->
   <div class="row">
@@ -148,5 +193,6 @@
         func_failed_installs({{ response['most_failed_packages']|tojson}});
     }
     func_failed_installs({{ response['most_failed_packages']|tojson}});
+    func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
   </script>
 {% endblock %}

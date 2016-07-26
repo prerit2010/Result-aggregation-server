@@ -155,24 +155,40 @@ def data_view():
     if all_attempts == "on":
         failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version, 
             db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
+        failed_info_names = db.session.query(FailedInstalls.name, FailedInstalls.version, 
+            db.func.count().label("count")).group_by(FailedInstalls.name).all()
     else:
         # select all the latest attempt_ids per unique user from attempts table 
         attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
         latest_attempt_ids = [ x[0] for x in attempts ]
-        print(latest_attempt_ids)
+        
         #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(FailedInstalls.name, 
             FailedInstalls.version, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name, 
             FailedInstalls.version).all()
+        failed_info_names = db.session.query(FailedInstalls.name, 
+            FailedInstalls.version, db.func.count().label("count")).filter(
+            FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name).all()
+
     most_failed_packages = [
         {"name": fail.name, "version": fail.version, "count" : fail.count}
         for fail in failed_info
     ]
 
-    most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
+    most_failed_package_names = [
+        {"name": fail.name, "version": fail.version, "count" : fail.count}
+        for fail in failed_info_names
+    ]
 
-    response = {"most_failed_packages": most_failed_packages, "os_users" : os_users}
+    most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
+    most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
+
+    response = {
+        "most_failed_packages": most_failed_packages,
+        "most_failed_package_names": most_failed_package_names,
+        "os_users" : os_users
+    }
 
     if request.args.get('export') == 'json':
         return make_response(jsonify(response))
@@ -217,7 +233,7 @@ def data_view_by_workshop(workshop_id):
             db.func.max(Attempts.id).label("attempt_id")).filter(
             UserSystemInfo.workshop_id==workshop_id).group_by(Attempts.unique_user_id)
         latest_attempt_ids = [ x[1] for x in attempts ]
-        print(latest_attempt_ids)
+        
         #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(FailedInstalls.name, 
             FailedInstalls.version, db.func.count().label("count")).filter(
