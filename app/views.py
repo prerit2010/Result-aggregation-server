@@ -67,12 +67,12 @@ def installation_data():
     using the user_id as foreign key.
     """
     success_objects_list = [
-        SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version')) 
+        SuccessfulInstalls(name=succ_install.get('name'),version=succ_install.get('version').replace('\n','')) 
             for succ_install in successful_installs 
     ]
 
     failed_objects_list = [
-        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version'),
+        FailedInstalls(name=fail_install.get('name'), version=fail_install.get('version').replace('\n',''),
              error_description=fail_install.get('error_description')) 
             for fail_install in failed_installs
     ]
