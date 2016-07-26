@@ -155,7 +155,7 @@ def data_view():
     if all_attempts == "on":
         failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version, 
             db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
-        failed_info_names = db.session.query(FailedInstalls.name, FailedInstalls.version, 
+        failed_info_names = db.session.query(FailedInstalls.name, 
             db.func.count().label("count")).group_by(FailedInstalls.name).all()
     else:
         # select all the latest attempt_ids per unique user from attempts table 
@@ -167,8 +167,7 @@ def data_view():
             FailedInstalls.version, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name, 
             FailedInstalls.version).all()
-        failed_info_names = db.session.query(FailedInstalls.name, 
-            FailedInstalls.version, db.func.count().label("count")).filter(
+        failed_info_names = db.session.query(FailedInstalls.name, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name).all()
 
     most_failed_packages = [
@@ -177,7 +176,7 @@ def data_view():
     ]
 
     most_failed_package_names = [
-        {"name": fail.name, "version": fail.version, "count" : fail.count}
+        {"name": fail.name, "count" : fail.count}
         for fail in failed_info_names
     ]
 

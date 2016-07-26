@@ -92,6 +92,38 @@ function func_failed_installs(most_failed_packages){
         Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
 }
 
+function func_failed_installs_names(most_failed_packages){
+    var x_values = []
+    var y_values = []
+    for(var i=0 ; i < most_failed_packages.length ; i++){
+        var failed_package = most_failed_packages[i]['name'];
+        x_values.push(failed_package);
+        y_values.push(most_failed_packages[i]['count']);
+    }
+    var data = [
+        {
+            x:  y_values,
+            y: x_values,
+            type: 'bar',
+            orientation : 'h'
+        }
+        ];
+        var layout = {
+            title: '',
+            showlegend: false,
+            margin:{
+                l:300
+            },
+            yaxis : {
+                title : 'Package Names ( failed )'
+            },
+            xaxis : {
+                title : 'Number of users'
+            }
+        };
+        Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
+}
+
 function func_python_users(python_version){
     var x_values = []
     var y_values = []
