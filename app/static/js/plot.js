@@ -121,7 +121,7 @@ function func_failed_installs_names(most_failed_packages){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
+        Plotly.newPlot('failed_package_names', data, layout, {displayModeBar: false});
 }
 
 function func_python_users(python_version){
