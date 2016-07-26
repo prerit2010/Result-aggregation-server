@@ -61,7 +61,7 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading panel-heading-custom">
-            <h3 class="panel-title text-center"><b>Most Failed Packages</b></h3>
+            <h3 class="panel-title text-center"><b>Most Failed Packages with Version</b></h3>
         </div>
         <div class="panel-body">
           <div class="row">
@@ -187,7 +187,7 @@
     func_os_user({{ response['os_users']|tojson}});
     func_failed_installs({{ response['most_failed_packages']|tojson}});
     func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
-    
+
     function failed_packages_toggle(){
       var optn = document.getElementById('toggle_failed_packages').checked;
       if(optn == true)
