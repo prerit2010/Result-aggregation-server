@@ -146,7 +146,8 @@ def data_view():
 
     all_attempts = request.args.get('all_attempts')
     #Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
-    user_info = db.session.query(UserSystemInfo.system, db.func.count().label("count")).group_by(UserSystemInfo.system).all()
+    user_info = db.session.query(UserSystemInfo.system,
+        db.func.count().label("count")).group_by(UserSystemInfo.system).all()
     os_users = {}
     for user in user_info:
         os_users[user.system] = user.count
@@ -165,8 +166,9 @@ def data_view():
         #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(FailedInstalls.name, 
             FailedInstalls.version, db.func.count().label("count")).filter(
-            FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name, 
-            FailedInstalls.version).all()
+                FailedInstalls.attempt_id.in_(latest_attempt_ids)
+            ).group_by(FailedInstalls.name, FailedInstalls.version).all()
+
         failed_info_names = db.session.query(FailedInstalls.name, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name).all()
 
@@ -221,28 +223,32 @@ def data_view_by_workshop(workshop_id):
 
      #if all attempts toggle is on, select all failed install for each attempt.
     if all_attempts:
-        failed_info = FailedInstalls.query.join(UserSystemInfo,
-            UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
-                UserSystemInfo.workshop_id==workshop_id).group_by(FailedInstalls.name, FailedInstalls.version)
-        failed_info_names = FailedInstalls.query.join(UserSystemInfo,
-            UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                FailedInstalls.name, db.func.count().label("count")).filter(
-                UserSystemInfo.workshop_id==workshop_id).group_by(FailedInstalls.name)
+        failed_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
+            FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
+                UserSystemInfo.id==FailedInstalls.user_id,
+                UserSystemInfo.workshop_id==workshop_id
+            ).group_by(FailedInstalls.name, FailedInstalls.version)
+
+        failed_info_names = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
+            FailedInstalls.name, db.func.count().label("count")).filter(
+                UserSystemInfo.id==FailedInstalls.user_id,
+                UserSystemInfo.workshop_id==workshop_id
+            ).group_by(FailedInstalls.name)
     else:
         # select all the latest attempt_ids per unique user from attempts table 
-        attempts = Attempts.query.join(UserSystemInfo, 
-            Attempts.unique_user_id==UserSystemInfo.unique_user_id).add_columns(
-            db.func.max(Attempts.id).label("attempt_id")).filter(
-            UserSystemInfo.workshop_id==workshop_id).group_by(Attempts.unique_user_id)
+        attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
+                db.func.max(Attempts.id).label("attempt_id")).filter(
+                    UserSystemInfo.unique_user_id==Attempts.unique_user_id,
+                    UserSystemInfo.workshop_id==workshop_id
+                ).group_by(Attempts.unique_user_id)
         latest_attempt_ids = [ x[1] for x in attempts ]
         
         #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(FailedInstalls.name, 
             FailedInstalls.version, db.func.count().label("count")).filter(
-            FailedInstalls.attempt_id.in_(latest_attempt_ids), 
-            ).group_by(FailedInstalls.name, 
-            FailedInstalls.version).all()
+                FailedInstalls.attempt_id.in_(latest_attempt_ids), 
+            ).group_by(FailedInstalls.name, FailedInstalls.version).all()
+        
         failed_info_names = db.session.query(FailedInstalls.name, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids), 
             ).group_by(FailedInstalls.name).all()
@@ -284,22 +290,66 @@ def data_view_detail_package():
     package_name = request.args.get('package_detail').split('|')[0]
     version = request.args.get('package_detail').split('|')[1]
     workshop_name = request.args.get('workshop_name')
-    if workshop_name:
-        user_info = UserSystemInfo.query.join(FailedInstalls, 
-                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                    UserSystemInfo.system, UserSystemInfo.system_platform,
-                    UserSystemInfo.system_version, UserSystemInfo.machine,
-                    UserSystemInfo.python_version).filter(
-                    FailedInstalls.name==package_name, FailedInstalls.version==version, UserSystemInfo.workshop_id==workshop_name)
-    else:    
-        user_info = UserSystemInfo.query.join(FailedInstalls, 
-                    UserSystemInfo.id==FailedInstalls.user_id).add_columns(
-                    UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                    UserSystemInfo.system, UserSystemInfo.system_platform,
-                    UserSystemInfo.system_version, UserSystemInfo.machine,
-                    UserSystemInfo.python_version).filter(
-                    FailedInstalls.name==package_name, FailedInstalls.version==version)
+    all_attempts = request.args.get('all_attempts')
+    
+    if all_attempts:
+        if workshop_name:
+            user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
+                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                UserSystemInfo.system, UserSystemInfo.system_platform,
+                UserSystemInfo.system_version, UserSystemInfo.machine,
+                UserSystemInfo.python_version).filter(
+                    UserSystemInfo.id == FailedInstalls.user_id,
+                    FailedInstalls.name==package_name,
+                    FailedInstalls.version==version,
+                    UserSystemInfo.workshop_id==workshop_name
+                )
+        else:
+            user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
+                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                UserSystemInfo.system, UserSystemInfo.system_platform,
+                UserSystemInfo.system_version, UserSystemInfo.machine,
+                UserSystemInfo.python_version).filter(
+                    UserSystemInfo.id == FailedInstalls.user_id,
+                    FailedInstalls.name==package_name,
+                    FailedInstalls.version==version
+                )
+    else:
+        if workshop_name:
+            attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
+                db.func.max(Attempts.id).label("attempt_id")).filter(
+                    UserSystemInfo.unique_user_id==Attempts.unique_user_id,
+                    UserSystemInfo.workshop_id==workshop_name
+                ).group_by(Attempts.unique_user_id)
+
+            latest_attempt_ids = [ x[1] for x in attempts ]
+
+            user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                UserSystemInfo.system, UserSystemInfo.system_platform,
+                UserSystemInfo.system_version, UserSystemInfo.machine,
+                UserSystemInfo.python_version).filter(
+                    UserSystemInfo.id==FailedInstalls.user_id,
+                    FailedInstalls.name==package_name,
+                    FailedInstalls.version==version,
+                    FailedInstalls.attempt_id.in_(latest_attempt_ids),
+                    UserSystemInfo.workshop_id==workshop_name
+                )
+        else:
+            attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
+            latest_attempt_ids = [ x[0] for x in attempts ] 
+            
+            user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                UserSystemInfo.system, UserSystemInfo.system_platform,
+                UserSystemInfo.system_version, UserSystemInfo.machine,
+                UserSystemInfo.python_version).filter(
+                    UserSystemInfo.id==FailedInstalls.user_id,
+                    FailedInstalls.name==package_name,
+                    FailedInstalls.version==version,
+                    FailedInstalls.attempt_id.in_(latest_attempt_ids)
+                )
+        
         
     distribution_name = []; distribution_version = []; system = []; system_platform = [];
     system_version = []; machine = []; python_version = []; distribution_name_version = [];
@@ -313,7 +363,7 @@ def data_view_detail_package():
         system_version.append(user.system_version)
         machine.append(user.machine)
         python_version.append(user.python_version)
-
+    
     distribution_name = Counter(filter(None,distribution_name))
     distribution_version = Counter(filter(None,distribution_version))
     distribution_version = Counter(filter(None,distribution_version))

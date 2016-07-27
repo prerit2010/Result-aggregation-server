@@ -17,8 +17,10 @@
     	<div class="form-group">
     	  <label for="sel1">Filter by failed package :</label>
     	  <form action="/view/detail/" method="GET">
-          <input type="hidden" name="all_attempts" value="{{all_attempts}}" />
-    	    <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
+          {% if all_attempts %}
+            <input type="hidden" name="all_attempts" value="{{all_attempts}}" />
+    	    {% endif %}
+          <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
     	      <option>None</option>
     	      {% for failed_package in response['most_failed_packages'] %}
     	        <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
