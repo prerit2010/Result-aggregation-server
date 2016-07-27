@@ -17,6 +17,7 @@
     	<div class="form-group">
     	  <label for="sel1">Filter by failed package :</label>
     	  <form action="/view/detail/" method="GET">
+          <input type="hidden" name="all_attempts" value="{{all_attempts}}" />
     	    <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
     	      <option>None</option>
     	      {% for failed_package in response['most_failed_packages'] %}
@@ -43,7 +44,7 @@
       {% else %}
         <form action="/view/" method="GET">
       {% endif %}
-          {% if all_attempts == "on" %}
+          {% if all_attempts %}
             <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" />
           {% else %}
             <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" />

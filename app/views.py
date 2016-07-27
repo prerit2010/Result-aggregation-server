@@ -152,7 +152,7 @@ def data_view():
         os_users[user.system] = user.count
 
     #if all attempts toggle is on, select all failed install for each attempt.
-    if all_attempts == "on":
+    if all_attempts:
         failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version, 
             db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
         failed_info_names = db.session.query(FailedInstalls.name, 
@@ -220,7 +220,7 @@ def data_view_by_workshop(workshop_id):
         os_users[user.system] = user.count
 
      #if all attempts toggle is on, select all failed install for each attempt.
-    if all_attempts == "on":
+    if all_attempts:
         failed_info = FailedInstalls.query.join(UserSystemInfo,
             UserSystemInfo.id==FailedInstalls.user_id).add_columns(
                 FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
