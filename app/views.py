@@ -244,7 +244,7 @@ def data_view_by_workshop(workshop_id):
                     UserSystemInfo.unique_user_id==Attempts.unique_user_id,
                     UserSystemInfo.workshop_id==workshop_id
                 ).group_by(Attempts.unique_user_id)
-        latest_attempt_ids = [ x[1] for x in attempts ]
+        latest_attempt_ids = [ x.attempt_id for x in attempts ]
         
         #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(FailedInstalls.name, 
@@ -328,7 +328,7 @@ def data_view_detail_package():
                     UserSystemInfo.workshop_id==workshop_id
                 ).group_by(Attempts.unique_user_id)
 
-            latest_attempt_ids = [ x[1] for x in attempts ]
+            latest_attempt_ids = [ x.attempt_id for x in attempts ]
 
             user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
                 UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
