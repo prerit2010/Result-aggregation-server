@@ -185,23 +185,26 @@ def data_view():
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
     most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
 
-    response = {
-        "most_failed_packages": most_failed_packages,
-        "most_failed_package_names": most_failed_package_names,
-        "os_users" : os_users
-    }
-
-    if request.args.get('export') == 'json':
-        return make_response(jsonify(response))
-
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
     workshops = [
         user.workshop_id for user in user_info 
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops,
-                            workshop_name="All workshops", show_all=True, all_attempts=all_attempts)
+    response = {
+        "most_failed_packages": most_failed_packages,
+        "most_failed_package_names": most_failed_package_names,
+        "os_users" : os_users,
+        "workshops" : workshops,
+        "workshop_id" : "All workshops",
+        "all_workshops" : True,
+        "all_attempts" : all_attempts
+    }
+
+    if request.args.get('export') == 'json':
+        return make_response(jsonify(response))
+
+    return render_template('index.html', response=response)
 
 
 @application.route('/view/<workshop_id>/')
@@ -266,15 +269,6 @@ def data_view_by_workshop(workshop_id):
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
     most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
 
-    response = {
-        "most_failed_packages": most_failed_packages,
-        "most_failed_package_names": most_failed_package_names,
-        "os_users" : os_users
-    }
-
-    if request.args.get('export') == 'json':
-        return make_response(jsonify(response))
-
     #Get a list of all the workshops
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
     workshops = [
@@ -282,18 +276,30 @@ def data_view_by_workshop(workshop_id):
         if user.workshop_id is not None
     ]
 
-    return render_template('index.html', response=response, workshops=workshops,
-                         show_all=False, workshop_name=workshop_id, all_attempts=all_attempts)
+    response = {
+        "most_failed_packages": most_failed_packages,
+        "most_failed_package_names": most_failed_package_names,
+        "os_users" : os_users,
+        "workshops" : workshops,
+        "all_workshops" : False,
+        "workshop_id" : workshop_id,
+        "all_attempts" : all_attempts
+    }
+
+    if request.args.get('export') == 'json':
+        return make_response(jsonify(response))
+
+    return render_template('index.html', response=response)
 
 @application.route('/view/detail/')
 def data_view_detail_package():
     package_name = request.args.get('package_detail').split('|')[0]
     version = request.args.get('package_detail').split('|')[1]
-    workshop_name = request.args.get('workshop_name')
+    workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
     
     if all_attempts:
-        if workshop_name:
+        if workshop_id:
             user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
                 UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                 UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -302,7 +308,7 @@ def data_view_detail_package():
                     UserSystemInfo.id == FailedInstalls.user_id,
                     FailedInstalls.name==package_name,
                     FailedInstalls.version==version,
-                    UserSystemInfo.workshop_id==workshop_name
+                    UserSystemInfo.workshop_id==workshop_id
                 )
         else:
             user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
@@ -315,11 +321,11 @@ def data_view_detail_package():
                     FailedInstalls.version==version
                 )
     else:
-        if workshop_name:
+        if workshop_id:
             attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
                 db.func.max(Attempts.id).label("attempt_id")).filter(
                     UserSystemInfo.unique_user_id==Attempts.unique_user_id,
-                    UserSystemInfo.workshop_id==workshop_name
+                    UserSystemInfo.workshop_id==workshop_id
                 ).group_by(Attempts.unique_user_id)
 
             latest_attempt_ids = [ x[1] for x in attempts ]
@@ -333,7 +339,7 @@ def data_view_detail_package():
                     FailedInstalls.name==package_name,
                     FailedInstalls.version==version,
                     FailedInstalls.attempt_id.in_(latest_attempt_ids),
-                    UserSystemInfo.workshop_id==workshop_name
+                    UserSystemInfo.workshop_id==workshop_id
                 )
         else:
             attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
@@ -386,12 +392,14 @@ def data_view_detail_package():
             "system_platform" : system_platform,
             "machine" : machine,
             "python_version" : python_version
-        }
+        },
+        "workshop_id" : workshop_id,
+        "all_attempts" : all_attempts
     }
     if request.args.get('export') == 'json':
         return make_response(jsonify(response))
 
-    return render_template('details.html', data=response, workshop_name=workshop_name)
+    return render_template('details.html', response=response)
 
 @application.after_request
 def inject_x_rate_headers(response):
