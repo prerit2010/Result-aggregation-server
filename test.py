@@ -256,7 +256,7 @@ class TestCase(unittest.TestCase):
         message = json.loads(response.data.decode('utf-8'))
         assert 'os_users' in message
         assert 'most_failed_packages' in message
-        
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -293,8 +293,12 @@ def data_view_by_workshop(workshop_id):
 
 @application.route('/view/detail/')
 def data_view_detail_package():
-    package_name = request.args.get('package_detail').split('|')[0]
-    version = request.args.get('package_detail').split('|')[1]
+    package_name = request.args.get('package_name')
+    version = request.args.get('package_version')
+    package_detail = request.args.get('package_detail')
+    if package_detail:
+        package_name = request.args.get('package_detail').split('|')[0]
+        version = request.args.get('package_detail').split('|')[1]
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
     
