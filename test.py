@@ -257,6 +257,14 @@ class TestCase(unittest.TestCase):
         assert 'os_users' in message
         assert 'most_failed_packages' in message
 
+    def test_detail_latest_attempts_alL_workshops(self):
+        self.create_database_to_test_details()
+        payload = {"package_name" : "EasyMercurial", "package_version" : "2.5.0", "export" : "json"}
+        response = self.application.get('/view/detail/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        system_count = response_json['user_system_info']['system']['Linux']
+        self.assertEqual(system_count, 2)
 
 if __name__ == '__main__':
     unittest.main()
