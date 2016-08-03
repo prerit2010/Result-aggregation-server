@@ -239,6 +239,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_view_by_workshop(self):
+        """
+        Get data from '/view/test_workshop/'
+        """
+
         unique_user_id = str(uuid.uuid4())
         u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
                             system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
@@ -258,6 +262,10 @@ class TestCase(unittest.TestCase):
         assert 'most_failed_packages' in message
 
     def test_detail_latest_attempts_alL_workshops(self):
+        """
+        Get details of a package for latest attempt and all workshops.
+        """
+
         self.create_database_to_test_details()
         payload = {"package_name" : "EasyMercurial", "package_version" : "2.5.0", "export" : "json"}
         response = self.application.get('/view/detail/', query_string=payload)
