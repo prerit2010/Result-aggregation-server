@@ -372,7 +372,6 @@ def data_view_detail_package():
     
     distribution_name = Counter(filter(None,distribution_name))
     distribution_version = Counter(filter(None,distribution_version))
-    distribution_version = Counter(filter(None,distribution_version))
     distribution_name_version = Counter(filter(None,distribution_name_version))
     system = Counter(filter(None,system))
     system_platform = Counter(filter(None,system_platform))
