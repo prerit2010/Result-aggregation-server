@@ -43,6 +43,42 @@ class TestCase(unittest.TestCase):
         ]
         return data
 
+    def create_database_to_test_details(self):
+        """
+        This functions creates a database having 2 users by posting to '/installation_data/'.
+        Out of which one user has one attempt, while the other user has 2 attempts.
+        """
+        
+        data = {
+            "user_system_info" : self.create_user_info(),
+            "failed_installs" : self.create_failed_installs(),
+            "successful_installs": self.create_successful_installs(),
+            "unique_user_id" : None
+        }
+        
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                            headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+        key = json.loads(response.data.decode('utf-8'))['key']
+        
+        data['unique_user_id'] = key
+
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                    headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+
+        data['unique_user_id'] = None
+
+        response = self.application.post('/installation_data/', data=json.dumps(data),
+                                            headers={'Content-Type':'application/json'})
+        self.assertEqual(response.status_code, 200)
+
+        count = UserSystemInfo.query.count() #Count User rows
+        self.assertEqual(count, 2)
+        count = Attempts.query.count()
+        self.assertEqual(count,3)
+
+
     def tearDown(self):
         db.session.remove()
         db.drop_all()
@@ -220,6 +256,7 @@ class TestCase(unittest.TestCase):
         message = json.loads(response.data.decode('utf-8'))
         assert 'os_users' in message
         assert 'most_failed_packages' in message
+        
 
 if __name__ == '__main__':
     unittest.main()
