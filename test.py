@@ -55,6 +55,7 @@ class TestCase(unittest.TestCase):
             "successful_installs": self.create_successful_installs(),
             "unique_user_id" : None
         }
+        data['user_system_info']['workshop_id'] = "test_workshop_1"
         
         response = self.application.post('/installation_data/', data=json.dumps(data),
                                             headers={'Content-Type':'application/json'})
@@ -68,6 +69,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         data['unique_user_id'] = None
+        data['user_system_info']['workshop_id'] = "test_workshop_2"
 
         response = self.application.post('/installation_data/', data=json.dumps(data),
                                             headers={'Content-Type':'application/json'})
