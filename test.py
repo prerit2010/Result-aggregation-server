@@ -312,6 +312,24 @@ class TestCase(unittest.TestCase):
         system_count = response_json['user_system_info']['system']['Linux']
         self.assertEqual(system_count, 1)
 
+    def test_detail_all_attempts_one_workshop(self):
+        """
+        Get details of a package for all attempts and one workshop.
+        """
+
+        self.create_database_to_test_details()
+        payload = {
+            "package_name" : "EasyMercurial",
+            "package_version" : "2.5.0",
+            "workshop_id" : "test_workshop_1",
+            "all_attempts" : "on",
+            "export" : "json"
+        }
+        response = self.application.get('/view/detail/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        system_count = response_json['user_system_info']['system']['Linux']
+        self.assertEqual(system_count, 2)
 
 if __name__ == '__main__':
     unittest.main()
