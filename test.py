@@ -237,8 +237,20 @@ class TestCase(unittest.TestCase):
 
     def test_get_view_all(self):
         """Get request on 'view' endpoint"""
+
         response = self.application.get('/view/')
         self.assertEqual(response.status_code, 200)
+
+    def test_get_workshops(self):
+        """Get request on 'view' endpoint and check the count of workshops"""
+
+        self.create_database_to_test_details()
+        payload = {"export" :"json"}
+        response = self.application.get('/view/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        workshops_count = len(response_json['workshops'])
+        self.assertEqual(workshops_count, 2)
 
     def test_get_view_by_workshop(self):
         """
