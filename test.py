@@ -86,6 +86,8 @@ class TestCase(unittest.TestCase):
         db.drop_all()
 
     def test_insert_User_Info(self):
+        """Add user info directly in the database"""
+        
         unique_user_id = str(uuid.uuid4())
         u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
                             system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
@@ -98,6 +100,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(count, 1)
 
     def test_post_data(self):
+        """Post the data with all the information"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : self.create_failed_installs(),
                 "successful_installs": self.create_successful_installs()
@@ -107,6 +111,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_delete_User(self):
+        """Create a user and the delete it"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : self.create_failed_installs(),
                 "successful_installs": self.create_successful_installs()
@@ -127,6 +133,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(count, 0)
 
     def test_post_empty_failure(self):
+        """Post the data with an empty list of failed_installs"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : [],
                 "successful_installs": self.create_successful_installs()
@@ -136,6 +144,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_empty_success(self):
+        """Post the data with an empty list of successful_installs"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : self.create_failed_installs(),
                 "successful_installs": []
@@ -145,7 +155,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_empty_user_data(self):
-        data = {"user_system_info" : self.create_user_info(),
+        """Post the data without any user info"""
+
+        data = {"user_system_info" : {},
                 "failed_installs" : self.create_failed_installs(),
                 "successful_installs": self.create_successful_installs()
                 }
@@ -154,6 +166,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_modifies_unique_id(self):
+        """Post the data to installation_data endpoint with an accidently modified unique_user_id"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : [],
                 "successful_installs": [],
@@ -180,6 +194,7 @@ class TestCase(unittest.TestCase):
     def test_post_with_same_unique_id(self):
         """Post the data with same unique id (same user), and count the number
            of rows of UserSystemInfo"""
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : [],
                 "successful_installs": [],
@@ -207,6 +222,7 @@ class TestCase(unittest.TestCase):
         """Post the data with email id and workshop id in the first attempt.
            Now post again with the same unique id, but without email and workshop id.
         """
+
         data = {"user_system_info" : self.create_user_info(),
                 "failed_installs" : [],
                 "successful_installs": []
