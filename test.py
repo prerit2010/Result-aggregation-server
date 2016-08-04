@@ -318,6 +318,18 @@ class TestCase(unittest.TestCase):
         assert 'os_users' in message
         assert 'most_failed_packages' in message
 
+    def test_get_view_all_attempts(self):
+        """Get data from '/view/' for all_attempts"""
+
+        self.create_database()
+        payload = {"all_attempts": "on", "export" : "json"}
+        response = self.application.get('/view/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        package_failed_count = response_json['most_failed_packages'][0]['count']
+        self.assertEqual(package_failed_count, 3)
+
+
     def test_detail_latest_attempts_all_workshops(self):
         """
         Get details of a package for latest attempt and all workshops.
