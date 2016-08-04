@@ -319,7 +319,7 @@ class TestCase(unittest.TestCase):
         assert 'most_failed_packages' in message
 
     def test_get_view_all_attempts(self):
-        """Get data from '/view/' for all_attempts"""
+        """Get most_failed_packages from '/view/' for all_attempts"""
 
         self.create_database()
         payload = {"all_attempts": "on", "export" : "json"}
@@ -329,6 +329,16 @@ class TestCase(unittest.TestCase):
         package_failed_count = response_json['most_failed_packages'][0]['count']
         self.assertEqual(package_failed_count, 3)
 
+    def test_get_view_latest_attempt(self):
+        """Get most_failed_packages from '/view/' for latest_attempt"""
+
+        self.create_database()
+        payload = {"export" : "json"}
+        response = self.application.get('/view/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        package_failed_count = response_json['most_failed_packages'][0]['count']
+        self.assertEqual(package_failed_count, 2)
 
     def test_detail_latest_attempts_all_workshops(self):
         """
