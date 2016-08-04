@@ -11,6 +11,13 @@ class TestCase(unittest.TestCase):
         self.application = application.test_client()
         db.create_all()
 
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    #==================================================================================#
+    #======================== Intialization functions =================================#
+    
     def create_user_info(self):
         data = {
             "distribution_name": "Ubuntu", 
@@ -43,7 +50,7 @@ class TestCase(unittest.TestCase):
         ]
         return data
 
-    def create_database_to_test_details(self):
+    def create_database(self):
         """
         This functions creates a database having 2 users by posting to '/installation_data/'.
         Out of which one user has one attempt, while the other user has 2 attempts.
@@ -80,14 +87,12 @@ class TestCase(unittest.TestCase):
         count = Attempts.query.count()
         self.assertEqual(count,3)
 
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+    #===========================================================================#
+    #========================= Unit test cases =================================#
 
     def test_insert_User_Info(self):
         """Add user info directly in the database"""
-        
+
         unique_user_id = str(uuid.uuid4())
         u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
                             system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
@@ -260,7 +265,7 @@ class TestCase(unittest.TestCase):
     def test_get_workshops(self):
         """Get request on '/view/' endpoint and check the count of workshops"""
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {"export" :"json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
@@ -268,10 +273,21 @@ class TestCase(unittest.TestCase):
         workshops_count = len(response_json['workshops'])
         self.assertEqual(workshops_count, 2)
 
+    def test_get_failed_installs_list(self):
+        """Get request on '/view/' and count the failed_installs"""
+
+        self.create_database()
+        payload = {"export" :"json"}
+        response = self.application.get('/view/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        workshops_count = len(response_json['most_failed_packages'])
+        self.assertEqual(workshops_count, 2)
+
     def test_get_workshops_on_workshops_page(self):
         """Get request on '/view/test_workshop_1/' endpoint and check the count of workshops"""
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {"export" :"json"}
         response = self.application.get('/view/test_workshop_1/', query_string=payload)
         self.assertEqual(response.status_code, 200)
@@ -307,7 +323,7 @@ class TestCase(unittest.TestCase):
         Get details of a package for latest attempt and all workshops.
         """
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {"package_name" : "EasyMercurial", "package_version" : "2.5.0", "export" : "json"}
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
@@ -320,7 +336,7 @@ class TestCase(unittest.TestCase):
         Get details of a package for all attempt and all workshops.
         """
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {
             "package_name" : "EasyMercurial",
             "package_version" : "2.5.0",
@@ -338,7 +354,7 @@ class TestCase(unittest.TestCase):
         Get details of a package for latest attempt and one workshop.
         """
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {
             "package_name" : "EasyMercurial",
             "package_version" : "2.5.0",
@@ -356,7 +372,7 @@ class TestCase(unittest.TestCase):
         Get details of a package for all attempts and one workshop.
         """
 
-        self.create_database_to_test_details()
+        self.create_database()
         payload = {
             "package_name" : "EasyMercurial",
             "package_version" : "2.5.0",
