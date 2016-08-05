@@ -1,13 +1,15 @@
-import os,json
-import unittest, uuid
+import json
+import unittest
+import uuid
 from app import application, db
 from app.models import UserSystemInfo, SuccessfulInstalls, FailedInstalls, Attempts
+
 
 class TestCase(unittest.TestCase):
     def setUp(self):
         application.config['TESTING'] = True
         application.config['WTF_CSRF_ENABLED'] = False
-        application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/result_aggregation_test.db' 
+        application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/result_aggregation_test.db'
         self.application = application.test_client()
         db.create_all()
 
@@ -17,26 +19,28 @@ class TestCase(unittest.TestCase):
 
     #===================================================================================#
     #======================== Initialization functions =================================#
-    
+
     def create_user_info(self):
         data = {
-            "distribution_name": "Ubuntu", 
+            "distribution_name": "Ubuntu",
             "distribution_version": "15.10",
             "system_verson": "#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
             "system": "Linux",
             "machine": "x86_64",
             "system_platform": "Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
-            "python_version" : "2.7.10"
-            }
+            "python_version": "2.7.10"
+        }
         return data
 
     def create_failed_installs(self):
         data = [
-            {   "name" : "EasyMercurial",
+            {
+                "name": "EasyMercurial",
                 "version": "2.5.0",
                 "error_description": "errors finding EasyMercurial version"
             },
-            {   "name" : "Nose (nosetests)",
+            {
+                "name": "Nose (nosetests)",
                 "version": "4.0",
                 "error_description": "errors finding Nose (nosetests) version"
             }
@@ -45,8 +49,8 @@ class TestCase(unittest.TestCase):
 
     def create_successful_installs(self):
         data = [
-            {"name": "git", "version" : "2.5.0"},
-            {"name": "make", "version" : "4.0"}
+            {"name": "git", "version": "2.5.0"},
+            {"name": "make", "version": "4.0"}
         ]
         return data
 
@@ -55,37 +59,38 @@ class TestCase(unittest.TestCase):
         This functions creates a database having 2 users by posting to '/installation_data/'.
         Out of which one user has one attempt, while the other user has 2 attempts.
         """
-        
+
         data = {
-            "user_system_info" : self.create_user_info(),
-            "failed_installs" : self.create_failed_installs(),
+            "user_system_info": self.create_user_info(),
+            "failed_installs": self.create_failed_installs(),
             "successful_installs": self.create_successful_installs(),
-            "unique_user_id" : None
+            "unique_user_id": None
         }
+
         data['user_system_info']['workshop_id'] = "test_workshop_1"
-        
+
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                            headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         key = json.loads(response.data.decode('utf-8'))['key']
-        
+
         data['unique_user_id'] = key
 
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
         data['unique_user_id'] = None
         data['user_system_info']['workshop_id'] = "test_workshop_2"
 
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                            headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
-        count = UserSystemInfo.query.count() #Count User rows
+        count = UserSystemInfo.query.count()  # Count User rows
         self.assertEqual(count, 2)
         count = Attempts.query.count()
-        self.assertEqual(count,3)
+        self.assertEqual(count, 3)
 
     #===========================================================================#
     #========================= Unit test cases =================================#
@@ -95,10 +100,10 @@ class TestCase(unittest.TestCase):
 
         unique_user_id = str(uuid.uuid4())
         u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
-                            system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
-                            system="Linux", machine="x86_64",
-                            system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
-                            python_version="2.7.10", unique_user_id=unique_user_id)
+                           system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
+                           system="Linux", machine="x86_64",
+                           system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
+                           python_version="2.7.10", unique_user_id=unique_user_id)
         db.session.add(u)
         db.session.commit()
         count = UserSystemInfo.query.count()
@@ -107,91 +112,98 @@ class TestCase(unittest.TestCase):
     def test_post_data(self):
         """Post the data with all the information"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : self.create_failed_installs(),
-                "successful_installs": self.create_successful_installs()
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": self.create_failed_installs(),
+            "successful_installs": self.create_successful_installs()
+        }
+
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_delete_User(self):
         """Create a user and the delete it"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : self.create_failed_installs(),
-                "successful_installs": self.create_successful_installs()
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": self.create_failed_installs(),
+            "successful_installs": self.create_successful_installs()
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         count = FailedInstalls.query.count()
         self.assertEqual(count, 2)
         user = UserSystemInfo.query.get(1)
         db.session.delete(user)
         db.session.commit()
-        count = UserSystemInfo.query.count() #Count User rows
+        count = UserSystemInfo.query.count()  # Count User rows
         self.assertEqual(count, 0)
-        count = FailedInstalls.query.count() #Count Failure rows
+        count = FailedInstalls.query.count()  # Count Failure rows
         self.assertEqual(count, 0)
-        count = SuccessfulInstalls.query.count() #Count Success rows
+        count = SuccessfulInstalls.query.count()  # Count Success rows
         self.assertEqual(count, 0)
 
     def test_post_empty_failure(self):
         """Post the data with an empty list of failed_installs"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": self.create_successful_installs()
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": self.create_successful_installs()
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_empty_success(self):
         """Post the data with an empty list of successful_installs"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : self.create_failed_installs(),
-                "successful_installs": []
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": self.create_failed_installs(),
+            "successful_installs": []
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_empty_user_data(self):
         """Post the data without any user info"""
 
-        data = {"user_system_info" : {},
-                "failed_installs" : self.create_failed_installs(),
-                "successful_installs": self.create_successful_installs()
-                }
+        data = {
+            "user_system_info": {},
+            "failed_installs": self.create_failed_installs(),
+            "successful_installs": self.create_successful_installs()
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_modifies_unique_id(self):
         """Post the data to installation_data endpoint with an accidently modified unique_user_id"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
+        data = {"user_system_info": self.create_user_info(),
+                "failed_installs": [],
                 "successful_installs": [],
-                "unique_user_id" : "7dd03934-bed1-443e-a4f" #modified manually
+                "unique_user_id": "7dd03934-bed1-443e-a4f"  # modified manually
                 }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         message = json.loads(response.data.decode('utf-8'))['summary']['message']
         self.assertEqual(message, "new id generated")
 
     def test_post_none_unique_id(self):
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": [],
-                "unique_user_id" : None
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": [],
+            "unique_user_id": None
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         message = json.loads(response.data.decode('utf-8'))['summary']['message']
         self.assertEqual(message, "new id generated")
@@ -200,27 +212,30 @@ class TestCase(unittest.TestCase):
         """Post the data with same unique id (same user), and count the number
            of rows of UserSystemInfo"""
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": [],
-                "unique_user_id" : None
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": [],
+            "unique_user_id": None
+        }
+
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
-        count = UserSystemInfo.query.count() #Count User rows
+        count = UserSystemInfo.query.count()  # Count User rows
         self.assertEqual(count, 1)
         key = json.loads(response.data.decode('utf-8'))['key']
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": [],
-                "unique_user_id" : key #using same unique key
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": [],
+            "unique_user_id": key  # using same unique key
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         """The number of rows should remail 1 only"""
-        count = UserSystemInfo.query.count() #Count User rows
+        count = UserSystemInfo.query.count()  # Count User rows
         self.assertEqual(count, 1)
 
     def test_post_no_email_id_on_second_request(self):
@@ -228,14 +243,16 @@ class TestCase(unittest.TestCase):
            Now post again with the same unique id, but without email and workshop id.
         """
 
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": []
-                }
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": []
+        }
+
         data['user_system_info']['email_id'] = "abc@pqr.com"
         data['user_system_info']['workshop_id'] = "XYZ"
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         key = json.loads(response.data.decode('utf-8'))['key']
         user = UserSystemInfo.query.first()
@@ -243,14 +260,15 @@ class TestCase(unittest.TestCase):
         assert user.workshop_id is not None
         """POST again with same unique_user_id, but without email id and workshop_id.
            email_id and worskhop_id should not be rewritten to None"""
-        
-        data = {"user_system_info" : self.create_user_info(),
-                "failed_installs" : [],
-                "successful_installs": [],
-                "unique_user_id" : key
-                }
+
+        data = {
+            "user_system_info": self.create_user_info(),
+            "failed_installs": [],
+            "successful_installs": [],
+            "unique_user_id": key
+        }
         response = self.application.post('/installation_data/', data=json.dumps(data),
-                                    headers={'Content-Type':'application/json'})
+                                         headers={'Content-Type': 'application/json'})
         self.assertEqual(response.status_code, 200)
         user = UserSystemInfo.query.first()
         assert user.email_id is not None
@@ -266,7 +284,7 @@ class TestCase(unittest.TestCase):
         """Get request on '/view/' endpoint and check the count of workshops"""
 
         self.create_database()
-        payload = {"export" :"json"}
+        payload = {"export": "json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -277,7 +295,7 @@ class TestCase(unittest.TestCase):
         """Get request on '/view/' and count the failed_installs"""
 
         self.create_database()
-        payload = {"export" :"json"}
+        payload = {"export": "json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -288,7 +306,7 @@ class TestCase(unittest.TestCase):
         """Get request on '/view/test_workshop_1/' endpoint and check the count of workshops"""
 
         self.create_database()
-        payload = {"export" :"json"}
+        payload = {"export": "json"}
         response = self.application.get('/view/test_workshop_1/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -302,10 +320,10 @@ class TestCase(unittest.TestCase):
 
         unique_user_id = str(uuid.uuid4())
         u = UserSystemInfo(distribution_name="Ubuntu", distribution_version="15.10",
-                            system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
-                            system="Linux", machine="x86_64",
-                            system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
-                            python_version="2.7.10", unique_user_id=unique_user_id, workshop_id="test_workshop")
+                           system_version="#42-Ubuntu SMP Thu May 12 22:05:35 UTC 2016",
+                           system="Linux", machine="x86_64",
+                           system_platform="Linux-4.2.0-36-generic-x86_64-with-Ubuntu-15.10-wily",
+                           python_version="2.7.10", unique_user_id=unique_user_id, workshop_id="test_workshop")
         db.session.add(u)
         db.session.commit()
         count = UserSystemInfo.query.count()
@@ -322,7 +340,7 @@ class TestCase(unittest.TestCase):
         """Get most_failed_packages from '/view/' for all_attempts"""
 
         self.create_database()
-        payload = {"all_attempts": "on", "export" : "json"}
+        payload = {"all_attempts": "on", "export": "json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -333,7 +351,7 @@ class TestCase(unittest.TestCase):
         """Get most_failed_packages from '/view/' for latest_attempt"""
 
         self.create_database()
-        payload = {"export" : "json"}
+        payload = {"export": "json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -346,7 +364,7 @@ class TestCase(unittest.TestCase):
         """
 
         self.create_database()
-        payload = {"package_name" : "EasyMercurial", "package_version" : "2.5.0", "export" : "json"}
+        payload = {"package_name": "EasyMercurial", "package_version": "2.5.0", "export": "json"}
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -360,10 +378,10 @@ class TestCase(unittest.TestCase):
 
         self.create_database()
         payload = {
-            "package_name" : "EasyMercurial",
-            "package_version" : "2.5.0",
-            "all_attempts" : "on",
-            "export" : "json"
+            "package_name": "EasyMercurial",
+            "package_version": "2.5.0",
+            "all_attempts": "on",
+            "export": "json"
         }
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
@@ -378,10 +396,10 @@ class TestCase(unittest.TestCase):
 
         self.create_database()
         payload = {
-            "package_name" : "EasyMercurial",
-            "package_version" : "2.5.0",
-            "workshop_id" : "test_workshop_1",
-            "export" : "json"
+            "package_name": "EasyMercurial",
+            "package_version": "2.5.0",
+            "workshop_id": "test_workshop_1",
+            "export": "json"
         }
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
@@ -396,11 +414,11 @@ class TestCase(unittest.TestCase):
 
         self.create_database()
         payload = {
-            "package_name" : "EasyMercurial",
-            "package_version" : "2.5.0",
-            "workshop_id" : "test_workshop_1",
-            "all_attempts" : "on",
-            "export" : "json"
+            "package_name": "EasyMercurial",
+            "package_version": "2.5.0",
+            "workshop_id": "test_workshop_1",
+            "all_attempts": "on",
+            "export": "json"
         }
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
