@@ -4,6 +4,7 @@ from flask import request, g
 from redis import Redis
 redis = Redis()
 
+
 class RateLimit(object):
     expiration_window = 10
 
@@ -21,17 +22,20 @@ class RateLimit(object):
     remaining = property(lambda x: x.limit - x.current)
     over_limit = property(lambda x: x.current >= x.limit)
 
+
 def get_view_rate_limit():
     return getattr(g, '_view_rate_limit', None)
 
+
 def on_over_limit(limit):
     return 'You hit the rate limit', 400
+
 
 def ratelimit(limit, per=300, send_x_headers=True,
               over_limit=on_over_limit,
               scope_func=lambda: request.remote_addr,
               key_func=lambda: request.endpoint):
-    
+
     def decorator(f):
         def rate_limited(*args, **kwargs):
             key = 'rate-limit/%s/%s/' % (key_func(), scope_func())
