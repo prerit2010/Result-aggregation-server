@@ -7,7 +7,7 @@
         <label for="sel1">Filter by workshop:</label>
           <select class="form-control" id="sel_workshop" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
             <option value="All workshops">All workshops</option>
-            {% for workshop in workshops%}
+            {% for workshop in response['workshops'] %}
               <option value="{{workshop}}">{{workshop}}</option>
             {% endfor %}
           </select>
@@ -17,14 +17,17 @@
     	<div class="form-group">
     	  <label for="sel1">Filter by failed package :</label>
     	  <form action="/view/detail/" method="GET">
-    	    <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
+          {% if response['all_attempts'] %}
+            <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
+    	    {% endif %}
+          <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
     	      <option>None</option>
     	      {% for failed_package in response['most_failed_packages'] %}
     	        <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
     	      {% endfor %}
     	    </select>
-    	    {% if not show_all %}
-    	      <input type="hidden" value="{{workshop_name}}" name="workshop_name">
+    	    {% if not response['all_workshops'] %}
+    	      <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
     	    {% endif %}
     	    
     	  </form>
@@ -34,16 +37,16 @@
 
   <div class="row">
     <div class="col-md-6">
-      <H2>{{workshop_name}}</H2>
+      <H2>{{response['workshop_id']}}</H2>
     </div>
     <div class="col-md-6">
       <label>Filter by attempts:</label>
-      {% if not show_all %}
-        <form action="/view/{{workshop_name}}" method="GET">
+      {% if not response['all_workshops'] %}
+        <form action="/view/{{response['workshop_id']}}" method="GET">
       {% else %}
         <form action="/view/" method="GET">
       {% endif %}
-          {% if all_attempts == "on" %}
+          {% if response['all_attempts'] %}
             <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" />
           {% else %}
             <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" />
@@ -61,7 +64,7 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading panel-heading-custom">
-            <h3 class="panel-title text-center"><b>Most Failed Packages</b></h3>
+            <h3 class="panel-title text-center"><b>Most Failed Packages with Version</b></h3>
         </div>
         <div class="panel-body">
           <div class="row">
@@ -89,6 +92,51 @@
                   <tr>
                     <td>{{failed_package['name']}}</td>
                     <td>{{failed_package['version']}}</td>
+                    <td>{{failed_package['count']}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>             
+          </div>
+          <br /> <br />
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Most Failed Package Names</b></h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+          <div class="col-md-6 col-md-offset-2">
+          <input id="toggle_failed_packages_names" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_names_toggle();"  type="checkbox"  data-toggle="toggle" />
+          </div>
+          <div class="col-md-4 pull-right">
+            <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
+            <p><b>Zoom out: </b>Double click on the graph</p> 
+          </div>
+        </div>
+          <div id="failed_package_names"></div>
+          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_failed_names" aria-expanded="false" aria-controls="collapse_failed_names">Show in Tabular form</button>
+          <div class="collapse" id="collapse_failed_names">
+            <table class="table table-hover table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for failed_package in response['most_failed_package_names'] %}
+                  <tr>
+                    <td>{{failed_package['name']}}</td>
                     <td>{{failed_package['count']}}</td>
                   </tr>
                 {% endfor %}
@@ -140,6 +188,9 @@
   
   <script type="text/javascript">
     func_os_user({{ response['os_users']|tojson}});
+    func_failed_installs({{ response['most_failed_packages']|tojson}});
+    func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
+
     function failed_packages_toggle(){
       var optn = document.getElementById('toggle_failed_packages').checked;
       if(optn == true)
@@ -147,6 +198,13 @@
       else
         func_failed_installs({{ response['most_failed_packages']|tojson}});
     }
-    func_failed_installs({{ response['most_failed_packages']|tojson}});
+    function failed_packages_names_toggle(){
+      var optn = document.getElementById('toggle_failed_packages_names').checked;
+      if(optn == true)
+        func_failed_installs_names_all({{ response['most_failed_package_names']|tojson}});
+      else
+        func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
+    }
+    
   </script>
 {% endblock %}

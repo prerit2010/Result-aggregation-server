@@ -4,15 +4,15 @@
   
   <div class="row">
     <div class="col-md-6">
-      <H3><b>Package name :</b> {{data['package_name']}}</H3>
+      <H3><b>Package name :</b> {{response['package_name']}}</H3>
     </div>
     <div class="col-md-6">
-      <H3><b>Version :</b> {{data['package_version']}}</H3>
+      <H3><b>Version :</b> {{response['package_version']}}</H3>
     </div>
     
     <div class="col-md-12">
-      {% if workshop_name%}
-        <H3><b>Workshop :</b> {{workshop_name}}</H3>
+      {% if response['workshop_id'] %}
+        <H3><b>Workshop :</b> {{response['workshop_id']}}</H3>
       {% else %}
         <H3><b>Workshop :</b> All workshops</H3>
       {% endif %}
@@ -40,7 +40,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in data['user_system_info']['python_version'].items() %}
+                {% for key, value in response['user_system_info']['python_version'].items() %}
                   <tr>    
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
@@ -73,7 +73,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in data['user_system_info']['system'].items() %}
+                {% for key, value in response['user_system_info']['system'].items() %}
                   <tr>
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
@@ -107,7 +107,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in data['user_system_info']['distribution_name_version'].items() %}
+                {% for key, value in response['user_system_info']['distribution_name_version'].items() %}
                   <tr>    
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
@@ -138,7 +138,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in data['user_system_info']['machine'].items() %}
+              {% for key, value in response['user_system_info']['machine'].items() %}
                 <tr>    
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
@@ -168,7 +168,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in data['user_system_info']['system_version'].items() %}
+              {% for key, value in response['user_system_info']['system_version'].items() %}
                 <tr>    
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
@@ -198,7 +198,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in data['user_system_info']['system_platform'].items() %}
+              {% for key, value in response['user_system_info']['system_platform'].items() %}
                 <tr>    
                   <td>{{ key }}</td>
                   <td>{{ value }}</td>
@@ -214,9 +214,9 @@
   <hr >
 
   <script type="text/javascript">
-    func_python_users({{data['user_system_info']['python_version']|tojson}});
-    func_os_user_for_package({{data['user_system_info']['system']|tojson}});
-    func_os_user_dist_for_package({{data['user_system_info']['distribution_name_version']|tojson}});
+    func_python_users({{response['user_system_info']['python_version']|tojson}});
+    func_os_user_for_package({{response['user_system_info']['system']|tojson}});
+    func_os_user_dist_for_package({{response['user_system_info']['distribution_name_version']|tojson}});
   </script>
 
 {% endblock %}

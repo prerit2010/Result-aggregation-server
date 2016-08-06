@@ -1,7 +1,11 @@
 # Result-aggregation-server
 
+![image](http://i.imgur.com/YXwB9uc.png)
+
 Result aggregation server is a flask api and server that will be used to store the results returned by [installation test scripts](https://github.com/wking/swc-setup-installation-test). Currently the results are not being stored and thus no useful information is being extracted out of it.
 This server will enable instructors to identify the most faulty packages and versions and would help the [Software carpentry](http://software-carpentry.org/) students in the installation proccess.
+
+URL = [installation.software-carpentry.org/view/](http://installation.software-carpentry.org/view/)
 
 To fly this aircraft:
 
