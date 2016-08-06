@@ -10,15 +10,20 @@
       <H3><b>Version :</b> {{response['package_version']}}</H3>
     </div>
     
-    <div class="col-md-12">
+    <div class="col-md-6">
       {% if response['workshop_id'] %}
         <H3><b>Workshop :</b> {{response['workshop_id']}}</H3>
       {% else %}
         <H3><b>Workshop :</b> All workshops</H3>
       {% endif %}
     </div>
-    
-
+    <div class="col-md-6">
+      {% if response['all_attempts'] %}
+        <H3><b>All Attempts</b></H3>
+      {% else %}
+        <H3><b>Latest Attempt</b></H3>
+      {% endif  %}
+    </div>
   </div>
   
   <div class="row">
