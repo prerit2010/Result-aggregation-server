@@ -4,9 +4,9 @@ Result aggregation server is a flask api and server that will be used to store t
 
 This server will enable [Software Carpentry](http://software-carpentry.org/) and [Data Carpentry](http://data-carpentry.org/) instructors to identify the most faulty packages and versions. Also, it will help the Carpentries learners in the installation process.
 
-URL = [installation.software-carpentry.org/view/](http://installation.software-carpentry.org/view/)
+You can view the most faulty packages at http://installation.software-carpentry.org/view/.
 
-To fly this aircraft:
+## Instructions for developers
 
 * Clone this repository
 ```
