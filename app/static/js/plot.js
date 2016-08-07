@@ -22,7 +22,7 @@ function func_os_user(os_user){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('os_user', data, layout, {displayModeBar: false});
+        Plotly.newPlot('os_user', data, layout);
 }
 
 function func_failed_installs_all(most_failed_packages){
@@ -54,7 +54,7 @@ function func_failed_installs_all(most_failed_packages){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
+        Plotly.newPlot('failed_package', data, layout);
 }
 
 function func_failed_installs(most_failed_packages){
@@ -89,7 +89,7 @@ function func_failed_installs(most_failed_packages){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('failed_package', data, layout, {displayModeBar: false});
+        Plotly.newPlot('failed_package', data, layout);
 }
 
 function func_failed_installs_names_all(most_failed_packages){
@@ -121,7 +121,7 @@ function func_failed_installs_names_all(most_failed_packages){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('failed_package_names', data, layout, {displayModeBar: false});
+        Plotly.newPlot('failed_package_names', data, layout);
 }
 
 function func_failed_installs_names(most_failed_packages){
@@ -155,7 +155,7 @@ function func_failed_installs_names(most_failed_packages){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('failed_package_names', data, layout, {displayModeBar: false});
+        Plotly.newPlot('failed_package_names', data, layout);
 }
 
 function func_python_users(python_version){
@@ -182,7 +182,7 @@ function func_python_users(python_version){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('python_users', data, layout, {displayModeBar: false});
+        Plotly.newPlot('python_users', data, layout);
 
 }
 
@@ -210,7 +210,7 @@ function func_os_user_for_package(system){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('os_user_by_package', data, layout, {displayModeBar: false});
+        Plotly.newPlot('os_user_by_package', data, layout);
 
 }
 
@@ -239,7 +239,7 @@ function func_os_user_dist_for_package(system){
                 title : 'Number of users'
             }
         };
-        Plotly.newPlot('os_user_dist_by_package', data, layout, {displayModeBar: false});
+        Plotly.newPlot('os_user_dist_by_package', data, layout);
 
 }
 
