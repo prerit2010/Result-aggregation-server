@@ -26,19 +26,21 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading panel-heading-custom">
-          <h3 class="panel-title text-center"><b>Failure Time Series</b></h3>
-        </div>
-        <div class="panel-body">
-          <div id="create_time" style="height: 400px"></div>
+  {% if not response['workshop_id'] %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Failure Time Series</b></h3>
+          </div>
+          <div class="panel-body">
+            <div id="create_time" style="height: 400px"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <hr>
+    <hr>
+  {% endif %}
   
   <div class="row">
     <div class="col-md-12">
@@ -236,7 +238,9 @@
     func_python_users({{response['user_system_info']['python_version']|tojson}});
     func_os_user_for_package({{response['user_system_info']['system']|tojson}});
     func_os_user_dist_for_package({{response['user_system_info']['distribution_name_version']|tojson}});
-    func_failed_package_time_series({{response['create_time']|tojson}});
+    {% if not response['workshop_id'] %}
+      func_failed_package_time_series({{response['create_time']|tojson}});
+    {% endif %}
   </script>
 
 {% endblock %}
