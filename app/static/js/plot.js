@@ -242,3 +242,31 @@ function func_os_user_dist_for_package(system){
         Plotly.newPlot('os_user_dist_by_package', data, layout, {displayModeBar: false});
 
 }
+
+
+function func_failed_package_time_series(create_time){
+    var x_values = []
+    var y_values = []
+    for (var key in create_time) {
+        x_values.push(key);
+        y_values.push(create_time[key]);
+    }
+    var data = [
+      {
+        x: x_values,
+        y: y_values,
+        type: 'scatter'
+      }
+    ];
+    var layout = {
+            title: '',
+            xaxis : {
+                title : 'Time'
+            },
+            yaxis : {
+                title : 'Number of users'
+            }
+        };
+
+    Plotly.newPlot('create_time', data, layout);
+}
