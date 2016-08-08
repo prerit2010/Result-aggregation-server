@@ -14,7 +14,7 @@ def internal_error(error):
 
 
 @application.route('/installation_data/', methods=['POST'])
-@ratelimit(limit=500, per=60*60)
+@ratelimit(limit=500, per=60 * 60)
 def installation_data():
     """
     This endpoint accepts the data from installation test scripts and stores it on the database.
@@ -47,7 +47,7 @@ def installation_data():
             unique_user_id = str(uuid.uuid4())
             message = "new id generated"
 
-    #Get the system information from 'user_system_info', a dictionary received in the request.
+    # Get the system information from 'user_system_info', a dictionary received in the request.
     distribution_name = user_system_info.get('distribution_name')
     distribution_version = user_system_info.get('distribution_version')
     system_version = user_system_info.get('system_version')
@@ -147,14 +147,16 @@ def data_view():
     """
 
     all_attempts = request.args.get('all_attempts')
-    #Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
+    if all_attempts:
+        all_attempts = int(all_attempts)
+    # Select the operating system name and the count of its user using group_by 'UserSystemInfo.system'
     user_info = db.session.query(UserSystemInfo.system,
                                  db.func.count().label("count")).group_by(UserSystemInfo.system).all()
     os_users = {}
     for user in user_info:
         os_users[user.system] = user.count
 
-    #if all attempts toggle is on, select all failed install for each attempt.
+    # if all attempts toggle is on, select all failed install for each attempt.
     if all_attempts:
         failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version,
                                        db.func.count().label("count")).group_by(FailedInstalls.name,
@@ -166,7 +168,7 @@ def data_view():
         attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
         latest_attempt_ids = [x[0] for x in attempts]
 
-        #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
+        # query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(
             FailedInstalls.name, FailedInstalls.version,
             db.func.count().label("count")).filter(
@@ -218,7 +220,9 @@ def data_view_by_workshop(workshop_id):
     """
 
     all_attempts = request.args.get('all_attempts')
-    #If All workshops is selected as an option, redirect to '/view/'
+    if all_attempts:
+        all_attempts = int(all_attempts)
+    # If All workshops is selected as an option, redirect to '/view/'
     if workshop_id == "All workshops":
         return redirect(url_for('data_view'))
     user_info = db.session.query(
@@ -249,10 +253,10 @@ def data_view_by_workshop(workshop_id):
             db.func.max(Attempts.id).label("attempt_id")).filter(
             UserSystemInfo.unique_user_id == Attempts.unique_user_id,
             UserSystemInfo.workshop_id == workshop_id
-            ).group_by(Attempts.unique_user_id)
+        ).group_by(Attempts.unique_user_id)
         latest_attempt_ids = [x.attempt_id for x in attempts]
 
-        #query failed_installs table with a filter : attempt_id in latest_attempt_ids.
+        # query failed_installs table with a filter : attempt_id in latest_attempt_ids.
         failed_info = db.session.query(
             FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
             FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(
@@ -274,7 +278,7 @@ def data_view_by_workshop(workshop_id):
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
     most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
 
-    #Get a list of all the workshops
+    # Get a list of all the workshops
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
     workshops = [
         user.workshop_id for user in user_info
@@ -307,7 +311,8 @@ def data_view_detail_package():
         version = request.args.get('package_detail').split('|')[1]
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
-
+    if all_attempts:
+        all_attempts = int(all_attempts)
     if all_attempts:
         if workshop_id:
             user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
@@ -319,8 +324,9 @@ def data_view_detail_package():
                 FailedInstalls.name == package_name,
                 FailedInstalls.version == version,
                 UserSystemInfo.workshop_id == workshop_id
-                )
+            )
         else:
+
             user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
                 UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                 UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -329,14 +335,14 @@ def data_view_detail_package():
                 UserSystemInfo.id == FailedInstalls.user_id,
                 FailedInstalls.name == package_name,
                 FailedInstalls.version == version
-                )
+            )
     else:
         if workshop_id:
             attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
                 db.func.max(Attempts.id).label("attempt_id")).filter(
                 UserSystemInfo.unique_user_id == Attempts.unique_user_id,
                 UserSystemInfo.workshop_id == workshop_id
-                ).group_by(Attempts.unique_user_id)
+            ).group_by(Attempts.unique_user_id)
 
             latest_attempt_ids = [x.attempt_id for x in attempts]
 
@@ -350,7 +356,7 @@ def data_view_detail_package():
                 FailedInstalls.version == version,
                 FailedInstalls.attempt_id.in_(latest_attempt_ids),
                 UserSystemInfo.workshop_id == workshop_id
-                )
+            )
         else:
             attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
             latest_attempt_ids = [x[0] for x in attempts]
@@ -364,7 +370,7 @@ def data_view_detail_package():
                 FailedInstalls.name == package_name,
                 FailedInstalls.version == version,
                 FailedInstalls.attempt_id.in_(latest_attempt_ids)
-                )
+            )
 
     distribution_name = []
     distribution_version = []
