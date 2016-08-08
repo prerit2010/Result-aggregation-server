@@ -11,18 +11,33 @@ function func_os_user(os_user){
             y: y_values,
             type: 'bar'
         }
-        ];
-        var layout = {
-            title: '',
-            showlegend: false,
-            xaxis : {
-                title : 'Operating Systems'
-            },
-            yaxis : {
-                title : 'Number of users'
-            }
-        };
-        Plotly.newPlot('os_user', data, layout);
+    ];
+
+    var annotations_content = [];
+    for( var i = 0 ; i < x_values.length ; i++ ){
+      var result = {
+        x: x_values[i],
+        y: y_values[i],
+        text: y_values[i],
+        xanchor: 'center',
+        yanchor: 'bottom',
+        showarrow: false
+      };
+      annotations_content.push(result);
+    }
+    
+    var layout = {
+        title: '',
+        showlegend: false,
+        xaxis : {
+            title : 'Operating Systems'
+        },
+        yaxis : {
+            title : 'Number of users'
+        },
+        annotations: annotations_content
+    };
+    Plotly.newPlot('os_user', data, layout);
 }
 
 function func_failed_installs_all(most_failed_packages){
