@@ -6,6 +6,7 @@ from .limiter import *
 from collections import Counter
 import uuid
 import datetime
+import operator
 
 
 @application.errorhandler(500)
@@ -179,6 +180,7 @@ def data_view():
 
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
     most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
+    os_users = sorted(os_users.items(), key=operator.itemgetter(1), reverse=True)
 
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
     workshops = [
