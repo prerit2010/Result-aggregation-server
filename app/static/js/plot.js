@@ -25,7 +25,7 @@ function func_os_user(os_user){
       };
       annotations_content.push(result);
     }
-    
+
     var layout = {
         title: '',
         showlegend: false,
@@ -55,21 +55,22 @@ function func_failed_installs_all(most_failed_packages){
             type: 'bar',
             orientation : 'h'
         }
-        ];
-        var layout = {
-            title: '',
-            showlegend: false,
-            margin:{
-                l:300
-            },
-            yaxis : {
-                title : 'Package Names ( failed )'
-            },
-            xaxis : {
-                title : 'Number of users'
-            }
-        };
-        Plotly.newPlot('failed_package', data, layout);
+    ];
+
+    var layout = {
+        title: '',
+        showlegend: false,
+        margin:{
+            l:300
+        },
+        yaxis : {
+            title : 'Package Names ( failed )'
+        },
+        xaxis : {
+            title : 'Number of users'
+        }
+    };
+    Plotly.newPlot('failed_package', data, layout);
 }
 
 function func_failed_installs(most_failed_packages){
@@ -79,7 +80,7 @@ function func_failed_installs(most_failed_packages){
         var failed_package = most_failed_packages[i]['name'] + ' (' + most_failed_packages[i]['version'].split('(')[0] + ')';
         x_values.push(failed_package);
         y_values.push(most_failed_packages[i]['count']);
-        if(i > 10){
+        if(i > 8){
             break;
         }
     }
@@ -90,7 +91,20 @@ function func_failed_installs(most_failed_packages){
             type: 'bar',
             orientation : 'h'
         }
-        ];
+    ];
+
+    var annotations_content = [];
+    for( var i = 0 ; i < x_values.length ; i++ ){
+      var result = {
+        x: y_values[i],
+        y: x_values[i],
+        text: "       " + y_values[i].toString(),
+        xanchor: 'bottom',
+        yanchor: 'center',
+        showarrow: false
+      };
+      annotations_content.push(result);
+    }
         var layout = {
             title: '',
             showlegend: false,
@@ -102,7 +116,8 @@ function func_failed_installs(most_failed_packages){
             },
             xaxis : {
                 title : 'Number of users'
-            }
+            },
+            annotations: annotations_content
         };
         Plotly.newPlot('failed_package', data, layout);
 }
@@ -146,7 +161,7 @@ function func_failed_installs_names(most_failed_packages){
         var failed_package = most_failed_packages[i]['name'];
         x_values.push(failed_package);
         y_values.push(most_failed_packages[i]['count']);
-        if(i > 10)
+        if(i > 8)
             break;
     }
     var data = [
@@ -156,21 +171,36 @@ function func_failed_installs_names(most_failed_packages){
             type: 'bar',
             orientation : 'h'
         }
-        ];
-        var layout = {
-            title: '',
-            showlegend: false,
-            margin:{
-                l:300
-            },
-            yaxis : {
-                title : 'Package Names ( failed )'
-            },
-            xaxis : {
-                title : 'Number of users'
-            }
-        };
-        Plotly.newPlot('failed_package_names', data, layout);
+    ];
+
+    var annotations_content = [];
+    for( var i = 0 ; i < x_values.length ; i++ ){
+      var result = {
+        x: y_values[i],
+        y: x_values[i],
+        text: "       " + y_values[i].toString(),
+        xanchor: 'bottom',
+        yanchor: 'center',
+        showarrow: false
+      };
+      annotations_content.push(result);
+    }
+
+    var layout = {
+        title: '',
+        showlegend: false,
+        margin:{
+            l:300
+        },
+        yaxis : {
+            title : 'Package Names ( failed )'
+        },
+        xaxis : {
+            title : 'Number of users'
+        },
+        annotations: annotations_content
+    };
+    Plotly.newPlot('failed_package_names', data, layout);
 }
 
 function func_python_users(python_version){
