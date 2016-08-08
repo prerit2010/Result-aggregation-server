@@ -2,7 +2,8 @@ var mode_bar_global_settings = {
     modeBarButtonsToRemove: [
         'sendDataToCloud',
         'hoverCompareCartesian',
-        'hoverClosestCartesian'
+        'hoverClosestCartesian',
+        'zoom2d'
     ],
     displaylogo: false,
     displayModeBar: true
