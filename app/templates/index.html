@@ -182,10 +182,10 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in response['os_users'].items() %}
+                {% for value in response['os_users'] %}
                   <tr>    
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

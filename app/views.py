@@ -268,6 +268,7 @@ def data_view_by_workshop(workshop_id):
 
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
     most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
+    os_users = sorted(os_users.items(), key=operator.itemgetter(1), reverse=True)
 
     # Get a list of all the workshops
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()

@@ -1,9 +1,9 @@
 function func_os_user(os_user){
     var x_values = []
     var y_values = []
-    for (var key in os_user) {
-        x_values.push(key);
-        y_values.push(os_user[key])
+    for(var i = 0, size = os_user.length; i < size ; i++){
+       x_values.push(os_user[i][0]);
+       y_values.push(os_user[i][1]);
     }
     var data = [
         {
