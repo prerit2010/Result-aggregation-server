@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class"row">
+  <div class="row">
     <div class="col-md-6">
       <div class="form-group">
         <label for="sel1">Filter by workshop:</label>
@@ -39,7 +39,7 @@
     <div class="col-md-6">
       <H2>{{response['workshop_id']}}</H2>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-2">
       <label>Filter by attempts:</label>
       {% if not response['all_workshops'] %}
         <form action="/view/{{response['workshop_id']}}" method="GET">
@@ -51,14 +51,18 @@
           <select class="form-control" name="all_attempts" onchange="this.form.submit();">
             {% if response['all_attempts'] %}
               <option value="1" selected>All attempts</option>
-              <option value="0">Latest attempts</option>
+              <option value="0">Latest attempt</option>
             {% else %}
               <option value="1">All attempts</option>
-              <option value="0" selected>Latest attempts</option>
+              <option value="0" selected>Latest attempt</option>
             {% endif %}
           </select>
             <!-- <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" /> -->
         </form>
+    </div>
+    <div class="col-md-4">
+      <p><b>Latest attempt: </b>Last attempt made by each user.</p>
+      <p><b>All attempts: </b>All attempts made by each user.</p>
     </div>
   </div>
 
