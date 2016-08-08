@@ -398,6 +398,7 @@ def data_view_detail_package():
 
     python_version = sorted(python_version.items(), key=operator.itemgetter(1), reverse=True)
     system = sorted(system.items(), key=operator.itemgetter(1), reverse=True)
+    distribution_name_version = sorted(distribution_name_version.items(), key=operator.itemgetter(1), reverse=True)
 
     response = {
         "package_name": package_name,

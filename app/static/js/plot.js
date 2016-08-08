@@ -189,7 +189,7 @@ function func_python_users(python_version){
 function func_os_user_for_package(system){
     var x_values = []
     var y_values = []
-     for(var i = 0, size = system.length; i < size ; i++){
+    for(var i = 0, size = system.length; i < size ; i++){
        x_values.push(system[i][0]);
        y_values.push(system[i][1]);
     }
@@ -218,9 +218,9 @@ function func_os_user_for_package(system){
 function func_os_user_dist_for_package(system){
     var x_values = []
     var y_values = []
-    for (var key in system) {
-        x_values.push(key);
-        y_values.push(system[key]);
+    for(var i = 0, size = system.length; i < size ; i++){
+       x_values.push(system[i][0]);
+       y_values.push(system[i][1]);
     }
     var data = [
         {
