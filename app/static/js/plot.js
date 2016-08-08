@@ -161,9 +161,9 @@ function func_failed_installs_names(most_failed_packages){
 function func_python_users(python_version){
     var x_values = []
     var y_values = []
-    for (var key in python_version) {
-        x_values.push(key);
-        y_values.push(python_version[key]);
+    for(var i = 0, size = python_version.length; i < size ; i++){
+       x_values.push(python_version[i][0]);
+       y_values.push(python_version[i][1]);
     }
     var data = [
         {
