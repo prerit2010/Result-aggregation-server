@@ -261,6 +261,20 @@ function func_os_user_for_package(system){
             type: 'bar'
         }
     ];
+
+    var annotations_content = [];
+    for( var i = 0 ; i < x_values.length ; i++ ){
+        var result = {
+            x: x_values[i],
+            y: y_values[i],
+            text: y_values[i],
+            xanchor: 'center',
+            yanchor: 'bottom',
+            showarrow: false
+        };
+        annotations_content.push(result);
+    }
+
     var layout = {
         title: '',
         showlegend: false,
@@ -269,10 +283,10 @@ function func_os_user_for_package(system){
         },
         yaxis : {
             title : 'Number of users'
-        }
+        },
+        annotations: annotations_content
     };
     Plotly.newPlot('os_user_by_package', data, layout);
-
 }
 
 
