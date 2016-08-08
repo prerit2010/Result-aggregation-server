@@ -159,10 +159,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['machine'].items() %}
+              {% for value in response['user_system_info']['machine'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -189,10 +189,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['system_version'].items() %}
+              {% for value in response['user_system_info']['system_version'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                   </tr>
               {% endfor %}
             </tbody>
@@ -219,10 +219,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['system_platform'].items() %}
+              {% for value in response['user_system_info']['system_platform'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
