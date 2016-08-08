@@ -1,3 +1,14 @@
+var mode_bar_global_settings = {
+    modeBarButtonsToRemove: [
+        'sendDataToCloud',
+        'hoverCompareCartesian',
+        'hoverClosestCartesian'
+    ],
+    displaylogo: false,
+    displayModeBar: true
+}
+
+
 function func_os_user(os_user){
     var x_values = []
     var y_values = []
@@ -37,7 +48,7 @@ function func_os_user(os_user){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('os_user', data, layout);
+    Plotly.newPlot('os_user', data, layout, mode_bar_global_settings);
 }
 
 function func_failed_installs_all(most_failed_packages){
@@ -70,7 +81,7 @@ function func_failed_installs_all(most_failed_packages){
             title : 'Number of users'
         }
     };
-    Plotly.newPlot('failed_package', data, layout);
+    Plotly.newPlot('failed_package', data, layout, mode_bar_global_settings);
 }
 
 function func_failed_installs(most_failed_packages){
@@ -120,7 +131,7 @@ function func_failed_installs(most_failed_packages){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('failed_package', data, layout);
+    Plotly.newPlot('failed_package', data, layout, mode_bar_global_settings);
 }
 
 function func_failed_installs_names_all(most_failed_packages){
@@ -152,7 +163,7 @@ function func_failed_installs_names_all(most_failed_packages){
             title : 'Number of users'
         }
     };
-    Plotly.newPlot('failed_package_names', data, layout);
+    Plotly.newPlot('failed_package_names', data, layout, mode_bar_global_settings);
 }
 
 function func_failed_installs_names(most_failed_packages){
@@ -201,7 +212,7 @@ function func_failed_installs_names(most_failed_packages){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('failed_package_names', data, layout);
+    Plotly.newPlot('failed_package_names', data, layout, mode_bar_global_settings);
 }
 
 function func_python_users(python_version){
@@ -243,7 +254,7 @@ function func_python_users(python_version){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('python_users', data, layout);
+    Plotly.newPlot('python_users', data, layout, mode_bar_global_settings);
 
 }
 
@@ -286,7 +297,7 @@ function func_os_user_for_package(system){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('os_user_by_package', data, layout);
+    Plotly.newPlot('os_user_by_package', data, layout, mode_bar_global_settings);
 }
 
 
@@ -329,7 +340,7 @@ function func_os_user_dist_for_package(system){
         },
         annotations: annotations_content
     };
-    Plotly.newPlot('os_user_dist_by_package', data, layout);
+    Plotly.newPlot('os_user_dist_by_package', data, layout, mode_bar_global_settings);
 
 }
 
@@ -358,5 +369,5 @@ function func_failed_package_time_series(create_time){
             }
         };
 
-    Plotly.newPlot('create_time', data, layout);
+    Plotly.newPlot('create_time', data, layout, mode_bar_global_settings);
 }
