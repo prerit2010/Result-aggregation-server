@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class"row">
+
+  <div class="row">
+    <div class="page-header">
+      <a href="/view/"><h1>Installation Scripts Statistics</a></h1>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-6">
       <div class="form-group">
         <label for="sel1">Filter by workshop:</label>
@@ -39,19 +46,30 @@
     <div class="col-md-6">
       <H2>{{response['workshop_id']}}</H2>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-2">
       <label>Filter by attempts:</label>
       {% if not response['all_workshops'] %}
         <form action="/view/{{response['workshop_id']}}" method="GET">
       {% else %}
         <form action="/view/" method="GET">
       {% endif %}
-          {% if response['all_attempts'] %}
-            <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" />
-          {% else %}
-            <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" />
-          {% endif %}
+          
+            <!-- <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" /> -->
+          <select class="form-control" name="all_attempts" onchange="this.form.submit();">
+            {% if response['all_attempts'] %}
+              <option value="1" selected>All attempts</option>
+              <option value="0">Latest attempt</option>
+            {% else %}
+              <option value="1">All attempts</option>
+              <option value="0" selected>Latest attempt</option>
+            {% endif %}
+          </select>
+            <!-- <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" /> -->
         </form>
+    </div>
+    <div class="col-md-4">
+      <p><b>Latest attempt: </b>Last attempt made by each user.</p>
+      <p><b>All attempts: </b>All attempts made by each user.</p>
     </div>
   </div>
 
@@ -69,7 +87,7 @@
         <div class="panel-body">
           <div class="row">
           <div class="col-md-6 col-md-offset-2">
-          <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
+          <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 10" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
           </div>
           <div class="col-md-4 pull-right">
             <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
@@ -116,7 +134,7 @@
         <div class="panel-body">
           <div class="row">
           <div class="col-md-6 col-md-offset-2">
-          <input id="toggle_failed_packages_names" name="toggle_failed_packages" data-on="All" data-off="Top 12" onchange="failed_packages_names_toggle();"  type="checkbox"  data-toggle="toggle" />
+          <input id="toggle_failed_packages_names" name="toggle_failed_packages" data-on="All" data-off="Top 10" onchange="failed_packages_names_toggle();"  type="checkbox"  data-toggle="toggle" />
           </div>
           <div class="col-md-4 pull-right">
             <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
@@ -171,10 +189,10 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in response['os_users'].items() %}
+                {% for value in response['os_users'] %}
                   <tr>    
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

@@ -3,6 +3,12 @@
 {% block content %}
   
   <div class="row">
+    <div class="page-header">
+      <a href="/view/"><h1>Installation Scripts Statistics</a></h1>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-6">
       <H3><b>Package name :</b> {{response['package_name']}}</H3>
     </div>
@@ -25,6 +31,22 @@
       {% endif  %}
     </div>
   </div>
+
+  {% if not response['workshop_id'] %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Failure Time Series</b></h3>
+          </div>
+          <div class="panel-body">
+            <div id="create_time" style="height: 400px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  {% endif %}
   
   <div class="row">
     <div class="col-md-12">
@@ -45,10 +67,10 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in response['user_system_info']['python_version'].items() %}
+                {% for value in response['user_system_info']['python_version'] %}
                   <tr>    
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -78,10 +100,10 @@
                 </tr>
               </thead>
               <tbody>
-                {% for key, value in response['user_system_info']['system'].items() %}
+                {% for value in response['user_system_info']['system'] %}
                   <tr>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -93,40 +115,40 @@
   </div>
 
   <hr>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading panel-heading-custom">
-          <h3 class="panel-title text-center"><b>Linux distributions</b></h3>
-        </div>
-        <div class="panel-body">
-          <div id="os_user_dist_by_package" style="height: 400px"></div>
-          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_os_dist_user" aria-expanded="false" aria-controls="collapse_os_dist_user">Show in Tabular form</button>
-          <div class="collapse" id="collapse_os_dist_user">
-            <table class="table table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Distribution name</th>
-                  <th>Number of users</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for key, value in response['user_system_info']['distribution_name_version'].items() %}
-                  <tr>    
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
+  {% if response['user_system_info']['distribution_name_version'] %}
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Linux distributions</b></h3>
+          </div>
+          <div class="panel-body">
+            <div id="os_user_dist_by_package" style="height: 400px"></div>
+            <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_os_dist_user" aria-expanded="false" aria-controls="collapse_os_dist_user">Show in Tabular form</button>
+            <div class="collapse" id="collapse_os_dist_user">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Distribution name</th>
+                    <th>Number of users</th>
                   </tr>
-               {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {% for value in response['user_system_info']['distribution_name_version'] %}
+                    <tr>    
+                      <td>{{ value[0] }}</td>
+                      <td>{{ value[1] }}</td>
+                    </tr>
+                 {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <hr>
+    <hr>
+  {% endif %}
 
   <div class="row">
     <div class="col-md-12">
@@ -143,10 +165,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['machine'].items() %}
+              {% for value in response['user_system_info']['machine'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -173,10 +195,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['system_version'].items() %}
+              {% for value in response['user_system_info']['system_version'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                   </tr>
               {% endfor %}
             </tbody>
@@ -203,10 +225,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for key, value in response['user_system_info']['system_platform'].items() %}
+              {% for value in response['user_system_info']['system_platform'] %}
                 <tr>    
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
+                  <td>{{ value[0] }}</td>
+                  <td>{{ value[1] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -221,7 +243,12 @@
   <script type="text/javascript">
     func_python_users({{response['user_system_info']['python_version']|tojson}});
     func_os_user_for_package({{response['user_system_info']['system']|tojson}});
-    func_os_user_dist_for_package({{response['user_system_info']['distribution_name_version']|tojson}});
+    {% if response['user_system_info']['distribution_name_version'] %}
+      func_os_user_dist_for_package({{response['user_system_info']['distribution_name_version']|tojson}});
+    {% endif %}
+    {% if not response['workshop_id'] %}
+      func_failed_package_time_series({{response['create_time']|tojson}});
+    {% endif %}
   </script>
 
 {% endblock %}

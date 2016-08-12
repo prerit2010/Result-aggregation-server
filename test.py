@@ -17,8 +17,8 @@ class TestCase(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    #===================================================================================#
-    #======================== Initialization functions =================================#
+    # ===================================================================================#
+    # ======================== Initialization functions =================================#
 
     def create_user_info(self):
         data = {
@@ -92,8 +92,8 @@ class TestCase(unittest.TestCase):
         count = Attempts.query.count()
         self.assertEqual(count, 3)
 
-    #===========================================================================#
-    #========================= Unit test cases =================================#
+    # ===========================================================================#
+    # ========================= Unit test cases =================================#
 
     def test_insert_User_Info(self):
         """Add user info directly in the database"""
@@ -340,7 +340,7 @@ class TestCase(unittest.TestCase):
         """Get most_failed_packages from '/view/' for all_attempts"""
 
         self.create_database()
-        payload = {"all_attempts": "on", "export": "json"}
+        payload = {"all_attempts": "1", "export": "json"}
         response = self.application.get('/view/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
@@ -368,7 +368,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json['user_system_info']['system']['Linux']
+        system_count = response_json['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 2)
 
     def test_detail_all_attempts_all_workshops(self):
@@ -380,13 +380,13 @@ class TestCase(unittest.TestCase):
         payload = {
             "package_name": "EasyMercurial",
             "package_version": "2.5.0",
-            "all_attempts": "on",
+            "all_attempts": "1",
             "export": "json"
         }
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json['user_system_info']['system']['Linux']
+        system_count = response_json['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 3)
 
     def test_detail_latest_attempt_one_workshop(self):
@@ -404,7 +404,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json['user_system_info']['system']['Linux']
+        system_count = response_json['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 1)
 
     def test_detail_all_attempts_one_workshop(self):
@@ -417,13 +417,13 @@ class TestCase(unittest.TestCase):
             "package_name": "EasyMercurial",
             "package_version": "2.5.0",
             "workshop_id": "test_workshop_1",
-            "all_attempts": "on",
+            "all_attempts": "1",
             "export": "json"
         }
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json['user_system_info']['system']['Linux']
+        system_count = response_json['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 2)
 
 if __name__ == '__main__':
