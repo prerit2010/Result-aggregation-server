@@ -70,7 +70,7 @@
               <form action="/view/" method="GET">
             {% endif %}
                           
-                            <!-- <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" checked type="checkbox"  data-toggle="toggle" /> -->
+                           
             <select class="form-control" name="all_attempts" onchange="this.form.submit();">
               {% if response['all_attempts'] %}
                 <option value="1" selected>All attempts</option>
@@ -80,7 +80,6 @@
                 <option value="0" selected>Latest attempt</option>
               {% endif %}
             </select>
-                            <!-- <input id="toggle-event" name="all_attempts" data-on="All attempts" data-off="Latest attempt" onchange="this.form.submit();" type="checkbox" data-toggle="toggle" /> -->
             </form>
           </div>
         </li>
