@@ -298,138 +298,221 @@ def data_view_by_workshop(workshop_id):
 def data_view_detail_package():
     package_name = request.args.get('package_name')
     version = request.args.get('package_version')
-    package_detail = request.args.get('package_detail')
-    if package_detail:
+    package_detail_first = request.args.get('package_detail_first')
+    package_detail_second = request.args.get('package_detail_second')
+    first_package_all_versions = request.args.get("first_package_all_versions")
+    second_package_all_versions = request.args.get("second_package_all_versions")
+    if package_detail_first:
         try:
-            package_name = request.args.get('package_detail').split('|')[0]
-            version = request.args.get('package_detail').split('|')[1]
+            package_name_first = package_detail_first.split('|')[0]
+            package_version_first = package_detail_first.split('|')[1]
         except:
-            package_name = None
-            version = None
-    if package_name is None:
+            package_name_first = None
+            package_version_first = None
+    if package_detail_second:
+        try:
+            package_name_second = package_detail_second.split('|')[0]
+            package_version_second = package_detail_second.split('|')[1]
+        except:
+            package_name_second = None
+            package_version_second = None
+
+    if package_name_first is None:
         return redirect(url_for('data_view'))
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
     if all_attempts:
         all_attempts = int(all_attempts)
-    if all_attempts:
-        if workshop_id:
-            user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
-                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                UserSystemInfo.system, UserSystemInfo.system_platform,
-                UserSystemInfo.system_version, UserSystemInfo.machine,
-                UserSystemInfo.python_version, FailedInstalls.create_time).filter(
-                UserSystemInfo.id == FailedInstalls.user_id,
-                FailedInstalls.name == package_name,
-                FailedInstalls.version == version,
-                UserSystemInfo.workshop_id == workshop_id
-            )
-        else:
-
-            user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
-                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                UserSystemInfo.system, UserSystemInfo.system_platform,
-                UserSystemInfo.system_version, UserSystemInfo.machine,
-                UserSystemInfo.python_version, FailedInstalls.create_time).filter(
-                UserSystemInfo.id == FailedInstalls.user_id,
-                FailedInstalls.name == package_name,
-                FailedInstalls.version == version
-            )
-    else:
-        if workshop_id:
-            attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
-                db.func.max(Attempts.id).label("attempt_id")).filter(
-                UserSystemInfo.unique_user_id == Attempts.unique_user_id,
-                UserSystemInfo.workshop_id == workshop_id
-            ).group_by(Attempts.unique_user_id)
-
-            latest_attempt_ids = [x.attempt_id for x in attempts]
-
-            user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
-                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                UserSystemInfo.system, UserSystemInfo.system_platform,
-                UserSystemInfo.system_version, UserSystemInfo.machine,
-                UserSystemInfo.python_version, FailedInstalls.create_time).filter(
-                UserSystemInfo.id == FailedInstalls.user_id,
-                FailedInstalls.name == package_name,
-                FailedInstalls.version == version,
-                FailedInstalls.attempt_id.in_(latest_attempt_ids),
-                UserSystemInfo.workshop_id == workshop_id
-            )
-        else:
-            attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
-            latest_attempt_ids = [x[0] for x in attempts]
-
-            user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
-                UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
-                UserSystemInfo.system, UserSystemInfo.system_platform,
-                UserSystemInfo.system_version, UserSystemInfo.machine,
-                UserSystemInfo.python_version, FailedInstalls.create_time).filter(
-                UserSystemInfo.id == FailedInstalls.user_id,
-                FailedInstalls.name == package_name,
-                FailedInstalls.version == version,
-                FailedInstalls.attempt_id.in_(latest_attempt_ids)
-            )
-
-    distribution_name = []
-    distribution_version = []
-    system = []
-    system_platform = []
-    system_version = []
-    machine = []
-    python_version = []
-    distribution_name_version = []
-    create_time = []
-    for user in user_info:
-        distribution_name.append(user.distribution_name)
-        distribution_version.append(user.distribution_version)
-        if user.distribution_version and user.distribution_name:
-            distribution_name_version.append(user.distribution_name + " " + user.distribution_version)
-        system.append(user.system)
-        system_platform.append(user.system_platform)
-        system_version.append(user.system_version)
-        machine.append(user.machine)
-        python_version.append(user.python_version)
-        fail_date_time = user.create_time
-        create_time.append(str(datetime.datetime.date(fail_date_time)))
-
-    distribution_name = Counter(filter(None, distribution_name))
-    distribution_version = Counter(filter(None, distribution_version))
-    distribution_name_version = Counter(filter(None, distribution_name_version))
-    system = Counter(filter(None, system))
-    system_platform = Counter(filter(None, system_platform))
-    system_version = Counter(filter(None, system_version))
-    machine = Counter(filter(None, machine))
-    python_version = Counter(filter(None, python_version))
-    create_time = Counter(filter(None, create_time))
-
-    python_version = sorted(python_version.items(), key=operator.itemgetter(1), reverse=True)
-    system = sorted(system.items(), key=operator.itemgetter(1), reverse=True)
-    distribution_name_version = sorted(distribution_name_version.items(), key=operator.itemgetter(1), reverse=True)
-    system_platform = sorted(system_platform.items(), key=operator.itemgetter(1), reverse=True)
-    system_version = sorted(system_version.items(), key=operator.itemgetter(1), reverse=True)
-    machine = sorted(machine.items(), key=operator.itemgetter(1), reverse=True)
-
-    response = {
-        "package_name": package_name,
-        "package_version": version,
-        "user_system_info": {
-            "distribution_name": distribution_name,
-            "distribution_version": distribution_version,
-            "distribution_name_version": distribution_name_version,
-            "system": system,
-            "system_version": system_version,
-            "system_platform": system_platform,
-            "machine": machine,
-            "python_version": python_version
+    # if package_name_second and package_name_second == package_name_first:
+    failed_packages = [
+        {
+            "package_name": package_name_first,
+            "version": package_version_first,
+            "all_versions": first_package_all_versions
         },
-        "create_time": create_time,
-        "workshop_id": workshop_id,
-        "all_attempts": all_attempts
-    }
+        {
+            "package_name": package_name_second,
+            "version": package_version_second,
+            "all_versions": second_package_all_versions
+        }
+    ]
+    response = []
+    for failed_package in failed_packages:
+        if not failed_package['package_name']:
+            continue
+        if all_attempts:
+            if workshop_id:
+                if failed_package['all_versions']:
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        UserSystemInfo.workshop_id == workshop_id
+                    )
+                else:
+                    print("_versions")
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.name == failed_package['version'],
+                        UserSystemInfo.workshop_id == workshop_id
+                    )
+            else:
+                if failed_package['all_versions']:
+                    user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                    )
+                else:
+                    print("_versions")
+                    user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.version == failed_package['version']
+                    )
+
+        else:
+            if workshop_id:
+                attempts = db.session.query(UserSystemInfo, Attempts).add_columns(
+                    db.func.max(Attempts.id).label("attempt_id")).filter(
+                    UserSystemInfo.unique_user_id == Attempts.unique_user_id,
+                    UserSystemInfo.workshop_id == workshop_id
+                ).group_by(Attempts.unique_user_id)
+
+                latest_attempt_ids = [x.attempt_id for x in attempts]
+
+                if failed_package['all_versions']:
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.attempt_id.in_(latest_attempt_ids),
+                        UserSystemInfo.workshop_id == workshop_id
+                    )
+                else:
+                    print("_versions")
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.version == failed_package['version'],
+                        FailedInstalls.attempt_id.in_(latest_attempt_ids),
+                        UserSystemInfo.workshop_id == workshop_id
+                    )
+
+            else:
+
+                attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
+                latest_attempt_ids = [x[0] for x in attempts]
+                if failed_package['all_versions']:
+                    print("all_versions")
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.attempt_id.in_(latest_attempt_ids)
+                    )
+                else:
+                    print("_versions")
+                    user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
+                        UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
+                        UserSystemInfo.system, UserSystemInfo.system_platform,
+                        UserSystemInfo.system_version, UserSystemInfo.machine,
+                        UserSystemInfo.python_version, FailedInstalls.create_time).filter(
+                        UserSystemInfo.id == FailedInstalls.user_id,
+                        FailedInstalls.name == failed_package['package_name'],
+                        FailedInstalls.version == failed_package['version'],
+                        FailedInstalls.attempt_id.in_(latest_attempt_ids)
+                    )
+
+        distribution_name = []
+        distribution_version = []
+        system = []
+        system_platform = []
+        system_version = []
+        machine = []
+        python_version = []
+        distribution_name_version = []
+        create_time = []
+        for user in user_info:
+            distribution_name.append(user.distribution_name)
+            distribution_version.append(user.distribution_version)
+            if user.distribution_version and user.distribution_name:
+                distribution_name_version.append(user.distribution_name + " " + user.distribution_version)
+            system.append(user.system)
+            system_platform.append(user.system_platform)
+            system_version.append(user.system_version)
+            machine.append(user.machine)
+            python_version.append(user.python_version)
+            fail_date_time = user.create_time
+            create_time.append(str(datetime.datetime.date(fail_date_time)))
+
+        distribution_name = Counter(filter(None, distribution_name))
+        distribution_version = Counter(filter(None, distribution_version))
+        distribution_name_version = Counter(filter(None, distribution_name_version))
+        system = Counter(filter(None, system))
+        system_platform = Counter(filter(None, system_platform))
+        system_version = Counter(filter(None, system_version))
+        machine = Counter(filter(None, machine))
+        python_version = Counter(filter(None, python_version))
+        create_time = Counter(filter(None, create_time))
+
+        python_version = sorted(python_version.items(), key=operator.itemgetter(1), reverse=True)
+        system = sorted(system.items(), key=operator.itemgetter(1), reverse=True)
+        distribution_name_version = sorted(distribution_name_version.items(), key=operator.itemgetter(1), reverse=True)
+        system_platform = sorted(system_platform.items(), key=operator.itemgetter(1), reverse=True)
+        system_version = sorted(system_version.items(), key=operator.itemgetter(1), reverse=True)
+        machine = sorted(machine.items(), key=operator.itemgetter(1), reverse=True)
+        if failed_package['all_versions']:
+            failed_package['version'] = ""
+        resp = {
+            "package_name": failed_package['package_name'],
+            "package_version": failed_package['version'],
+            "user_system_info": {
+                "distribution_name": distribution_name,
+                "distribution_version": distribution_version,
+                "distribution_name_version": distribution_name_version,
+                "system": system,
+                "system_version": system_version,
+                "system_platform": system_platform,
+                "machine": machine,
+                "python_version": python_version
+            },
+            "create_time": create_time,
+            "workshop_id": workshop_id,
+            "all_attempts": all_attempts,
+            "all_versions": failed_package['all_versions']
+        }
+        response.append(resp)
 
     if request.args.get('export') == 'json':
-        return make_response(jsonify(response))
+        # print(response)
+        import json
+        return make_response(json.dumps(response))
 
     return render_template('details.html', response=response)
 
