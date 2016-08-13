@@ -22,44 +22,6 @@
         </li>
       </ul>
       <ul class="nav nav-sidebar">
-        <form action="/view/detail/" method="GET">
-        <li>
-          <div class="form-group container-fluid">
-            <label for="sel1">Filter by failed package :</label>
-              {% if response['all_attempts'] %}
-                <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
-              {% endif %}
-              <select class="form-control" id="sel1" name="package_detail_first">
-                <option>None</option>
-                {% for failed_package in response['most_failed_packages'] %}
-                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
-                {% endfor %}
-              </select>
-              {% if not response['all_workshops'] %}
-                <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
-              {% endif %}
-              <input type="checkbox" name="first_package_all_versions"> All versions </input>
-          </div>   
-        </li>
-
-        <li>
-          <div class="form-group container-fluid">
-            <label for="sel1">Filter by failed package :</label>
-              <select class="form-control" id="sel2" name="package_detail_second">
-                <option>None</option>
-                {% for failed_package in response['most_failed_packages'] %}
-                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
-                {% endfor %}
-              </select>
-              <input type="checkbox" name="second_package_all_versions"> All versions </input>
-          </div>   
-        </li>
-        <li>
-          <div class="container-fluid">
-            <input onclick="this.form.submit();" class="btn btn-primary" value="Submit">
-          </div>
-        </li>
-        </form>
         <li>
           <div class="container-fluid">
             <label>Filter by attempts:</label>
@@ -88,6 +50,47 @@
             <p><b>All attempts: </b>All attempts made by each user.</p>
           </div>
         </li>
+      </ul>
+      <ul class="nav nav-sidebar">
+        <form action="/view/detail/" method="GET">
+        <li>
+          <div class="form-group container-fluid">
+            <label for="sel1">Filter by failed package :</label>
+              {% if response['all_attempts'] %}
+                <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
+              {% endif %}
+              <select class="form-control" id="sel1" onchange="compare_button();" name="package_detail_first">
+                <option>None</option>
+                {% for failed_package in response['most_failed_packages'] %}
+                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                {% endfor %}
+              </select>
+              {% if not response['all_workshops'] %}
+                <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
+              {% endif %}
+              <input type="checkbox" name="first_package_all_versions"> All versions </input>
+          </div>   
+        </li>
+
+        <li>
+          <div class="form-group container-fluid">
+            <label for="sel1">Filter by failed package :</label>
+              <select class="form-control" id="sel2" onchange="compare_button();" name="package_detail_second">
+                <option>None</option>
+                {% for failed_package in response['most_failed_packages'] %}
+                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                {% endfor %}
+              </select>
+              <input type="checkbox" name="second_package_all_versions"> All versions </input>
+          </div>   
+        </li>
+        <li>
+          <div class="container">
+            <input id="submit_button" onclick="this.form.submit();" class="btn btn-primary" value="Submit" disabled>
+          </div>
+        </li>
+        </form>
+      </ul>  
       </ul>
     </div>
   </div>
@@ -224,6 +227,21 @@
   </div>
   
   <script type="text/javascript">
+    function compare_button(){
+      if(document.getElementById('sel2').value != "None" && document.getElementById('sel1').value != "None"){
+        document.getElementById('submit_button').value = "Compare";
+        document.getElementById('submit_button').disabled = false;
+      }
+      else{
+        if(document.getElementById('sel1').value != "None"){
+          document.getElementById('submit_button').value = "Submit";
+          document.getElementById('submit_button').disabled = false;
+        }
+        else
+          document.getElementById('submit_button').disabled = true;
+      }
+      return true;
+    }
     func_os_user({{ response['os_users']|tojson}});
     func_failed_installs({{ response['most_failed_packages']|tojson}});
     func_failed_installs_names({{ response['most_failed_package_names']|tojson}});

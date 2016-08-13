@@ -229,20 +229,24 @@ function func_python_users(python_version_one, python_version_two, package_name_
         name: package_name_one,
         type: 'bar'
     };
-    var x_values = [];
-    var y_values = [];
-    for(var i = 0, size = python_version_two.length; i < size ; i++){
-       x_values.push(python_version_two[i][0]);
-       y_values.push(python_version_two[i][1]);
-    }
-    var trace2 = {
-        x: x_values,
-        y: y_values,
-        name: package_name_two,
-        type: 'bar'
-    };
+    if(python_version_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = python_version_two.length; i < size ; i++){
+           x_values.push(python_version_two[i][0]);
+           y_values.push(python_version_two[i][1]);
+        }
+        var trace2 = {
+            x: x_values,
+            y: y_values,
+            name: package_name_two,
+            type: 'bar'
+        };
 
-    var data = [trace1, trace2];
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1]
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -285,20 +289,24 @@ function func_os_user_for_package(os_users_one, os_users_two, package_name_one, 
         name: package_name_one,
         type: 'bar'
     };
-    var x_values = [];
-    var y_values = [];
-    for(var i = 0, size = os_users_two.length; i < size ; i++){
-       x_values.push(os_users_two[i][0]);
-       y_values.push(os_users_two[i][1]);
-    }
-    var trace2 = {
-        x: x_values,
-        y: y_values,
-        name: package_name_two,
-        type: 'bar'
-    };
+    if(os_users_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = os_users_two.length; i < size ; i++){
+           x_values.push(os_users_two[i][0]);
+           y_values.push(os_users_two[i][1]);
+        }
+        var trace2 = {
+            x: x_values,
+            y: y_values,
+            name: package_name_two,
+            type: 'bar'
+        };
 
-    var data = [trace1, trace2];
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -329,48 +337,6 @@ function func_os_user_for_package(os_users_one, os_users_two, package_name_one, 
 }
 
 
-// function func_os_user_for_package(system){
-//     var x_values = []
-//     var y_values = []
-//     for(var i = 0, size = system.length; i < size ; i++){
-//        x_values.push(system[i][0]);
-//        y_values.push(system[i][1]);
-//     }
-//     var data = [
-//         {
-//             x: x_values,
-//             y: y_values,
-//             type: 'bar'
-//         }
-//     ];
-
-//     var annotations_content = [];
-//     for( var i = 0 ; i < x_values.length ; i++ ){
-//         var result = {
-//             x: x_values[i],
-//             y: y_values[i],
-//             text: y_values[i],
-//             xanchor: 'center',
-//             yanchor: 'bottom',
-//             showarrow: false
-//         };
-//         annotations_content.push(result);
-//     }
-
-//     var layout = {
-//         title: '',
-//         showlegend: false,
-//         xaxis : {
-//             title : 'Operating System'
-//         },
-//         yaxis : {
-//             title : 'Number of users'
-//         },
-//         annotations: annotations_content
-//     };
-//     Plotly.newPlot('os_user_by_package', data, layout, mode_bar_global_settings);
-// }
-
 function func_os_user_dist_for_package(linux_dist_package_one, linux_dist_package_two, package_name_one, package_name_two){
     var x_values = [];
     var y_values = [];
@@ -384,20 +350,24 @@ function func_os_user_dist_for_package(linux_dist_package_one, linux_dist_packag
         name: package_name_one,
         type: 'bar'
     };
-    var x_values = [];
-    var y_values = [];
-    for(var i = 0, size = linux_dist_package_two.length; i < size ; i++){
-       x_values.push(linux_dist_package_two[i][0]);
-       y_values.push(linux_dist_package_two[i][1]);
-    }
-    var trace2 = {
-        x: x_values,
-        y: y_values,
-        name: package_name_two,
-        type: 'bar'
-    };
+    if(linux_dist_package_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = linux_dist_package_two.length; i < size ; i++){
+           x_values.push(linux_dist_package_two[i][0]);
+           y_values.push(linux_dist_package_two[i][1]);
+        }
+        var trace2 = {
+            x: x_values,
+            y: y_values,
+            name: package_name_two,
+            type: 'bar'
+        };
 
-    var data = [trace1, trace2];
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -414,6 +384,7 @@ function func_os_user_dist_for_package(linux_dist_package_one, linux_dist_packag
 
     var layout = {
         title: '',
+        showlegend: true,
         barmode: 'group',
         xaxis : {
             title : 'Linux Distributions'
@@ -427,76 +398,6 @@ function func_os_user_dist_for_package(linux_dist_package_one, linux_dist_packag
 
 }
 
-// function func_os_user_dist_for_package(system){
-//     var x_values = []
-//     var y_values = []
-//     for(var i = 0, size = system.length; i < size ; i++){
-//        x_values.push(system[i][0]);
-//        y_values.push(system[i][1]);
-//     }
-//     var data = [
-//         {
-//             x: x_values,
-//             y: y_values,
-//             type: 'bar'
-//         }
-//     ];
-
-//     var annotations_content = [];
-//     for( var i = 0 ; i < x_values.length ; i++ ){
-//         var result = {
-//             x: x_values[i],
-//             y: y_values[i],
-//             text: y_values[i],
-//             xanchor: 'center',
-//             yanchor: 'bottom',
-//             showarrow: false
-//         };
-//         annotations_content.push(result);
-//     }
-
-//     var layout = {
-//         title: '',
-//         showlegend: false,
-//         xaxis : {
-//             title : 'Distributions'
-//         },
-//         yaxis : {
-//             title : 'Number of users'
-//         },
-//         annotations: annotations_content
-//     };
-//     Plotly.newPlot('os_user_dist_by_package', data, layout, mode_bar_global_settings);
-
-// }
-
-
-// function func_failed_package_time_series(create_time){
-//     var x_values = []
-//     var y_values = []
-//     for (var key in create_time) {
-//         x_values.push(key);
-//         y_values.push(create_time[key]);
-//     }
-//     var data = [
-//         {
-//             x: x_values,
-//             y: y_values,
-//             type: 'scatter'
-//         }
-//     ];
-//     var layout = {
-//             title: '',
-//             xaxis : {
-//                 title : 'Time'
-//             },
-//             yaxis : {
-//                 title : 'Number of users'
-//             }
-//         };
-
-//     Plotly.newPlot('create_time', data, layout, mode_bar_global_settings);
-// }
 
 function func_failed_package_time_series(create_time_package_one, create_time_package_two, package_name_one, package_name_two){
     var x_values = [];
@@ -511,20 +412,24 @@ function func_failed_package_time_series(create_time_package_one, create_time_pa
         name: package_name_one,
         type: 'scatter'
     };
-    var x_values = [];
-    var y_values = [];
-    for (var key in create_time_package_two) {
-        x_values.push(key);
-        y_values.push(create_time_package_two[key]);
-    }
-    var trace2 = {
-        x: x_values,
-        y: y_values,
-        name: package_name_two,
-        type: 'scatter'
-    };
+    if(create_time_package_two){
+        var x_values = [];
+        var y_values = [];
+        for (var key in create_time_package_two) {
+            x_values.push(key);
+            y_values.push(create_time_package_two[key]);
+        }
+        var trace2 = {
+            x: x_values,
+            y: y_values,
+            name: package_name_two,
+            type: 'scatter'
+        };
 
-    var data = [trace1, trace2];
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){

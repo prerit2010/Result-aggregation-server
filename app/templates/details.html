@@ -10,7 +10,11 @@
         <H3><b>Package name :</b> {{package['package_name']}}</H3>
       </div>
       <div class="col-md-6">
-        <H3><b>Version :</b> {{package['package_version']}}</H3>
+        {% if package['package_version'] != "" %}
+          <H3><b>Version :</b> {{package['package_version']}}</H3>
+        {% else %}
+          <H3><b>Version :</b> All versions</H3>
+        {% endif %}
       </div>
       {% endfor %}
    
@@ -125,7 +129,7 @@
     </div>
 
     <hr>
-    {% if response[0]['user_system_info']['distribution_name_version'] or response[1]['user_system_info']['distribution_name_version'] %}
+    {% if response[0]['user_system_info']['distribution_name_version'] %}
       <div class="row">
         <div class="col-md-12">
           <div class="panel panel-default">
@@ -271,14 +275,26 @@
     <hr >
   </div>
     <script type="text/javascript">
-    func_python_users({{response[0]['user_system_info']['python_version']|tojson}}, {{response[1]['user_system_info']['python_version']|tojson }}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
-    func_os_user_for_package({{response[0]['user_system_info']['system']|tojson}}, {{response[1]['user_system_info']['system']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
-    {% if response[0]['user_system_info']['distribution_name_version'] or response[1]['user_system_info']['distribution_name_version'] %}
-      func_os_user_dist_for_package({{response[0]['user_system_info']['distribution_name_version']|tojson}}, {{response[1]['user_system_info']['distribution_name_version']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+    {% if response|length == 2 %}
+      func_python_users({{response[0]['user_system_info']['python_version']|tojson}}, {{response[1]['user_system_info']['python_version']|tojson }}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      func_os_user_for_package({{response[0]['user_system_info']['system']|tojson}}, {{response[1]['user_system_info']['system']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      {% if response[0]['user_system_info']['distribution_name_version'] %}
+        func_os_user_dist_for_package({{response[0]['user_system_info']['distribution_name_version']|tojson}}, {{response[1]['user_system_info']['distribution_name_version']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      {% endif %}
+      {% if not response['workshop_id'] %}
+        func_failed_package_time_series({{response[0]['create_time']|tojson}}, {{response[1]['create_time']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      {% endif %}
+    {% else %}
+      func_python_users({{response[0]['user_system_info']['python_version']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      func_os_user_for_package({{response[0]['user_system_info']['system']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% if response[0]['user_system_info']['distribution_name_version'] %}
+        func_os_user_dist_for_package({{response[0]['user_system_info']['distribution_name_version']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% endif %}
+      {% if not response['workshop_id'] %}
+        func_failed_package_time_series({{response[0]['create_time']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% endif %}
     {% endif %}
-    {% if not response['workshop_id'] %}
-      func_failed_package_time_series({{response[0]['create_time']|tojson}}, {{response[1]['create_time']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
-    {% endif %}
+
   </script>
 
 {% endblock %}
