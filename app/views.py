@@ -56,6 +56,7 @@ def installation_data():
     workshop_id = user_system_info.get('workshop_id')
     email_id = user_system_info.get('email_id')
     # uname  = user_system_info.get('uname')
+    workshop_id_default = "No workshop name provided"
 
     # Everytime an attempt is made, be it from a new user, or from the same user,
     # log the attempt with the user's unique_user_id
@@ -78,6 +79,8 @@ def installation_data():
     # If yes, update the information, else, create a new record.
     user_info = UserSystemInfo.query.filter_by(unique_user_id=unique_user_id).first()
     if user_info is None:
+        if workshop_id is None:
+            workshop_id = workshop_id_default
         user_info = UserSystemInfo(distribution_name=distribution_name,
                                    distribution_version=distribution_version, system_version=system_version,
                                    system=system, machine=machine, system_platform=system_platform,
