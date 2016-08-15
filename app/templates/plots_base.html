@@ -7,6 +7,11 @@
         	<h1><a href="/view/">Installation Scripts Statistics</a></h1>
       </div>
     </div>
+    {% if response['workshop_id']%}
+    	<h3 class="text-center bg-primary"> Workshop selected: {{response['workshop_id']}}</h3>
+    {% else %}
+    	<h3 class="text-center bg-primary"> Workshop selected: {{response[0]['workshop_id']}}</h3>
+    {% endif %}
   </nav>
 
 	{% block content_plots %}
