@@ -74,7 +74,7 @@
 
         <li>
           <div class="form-group container-fluid">
-            <label for="sel1">Filter by failed package :</label>
+            <label for="sel1">Also compare with :</label>
               <select class="form-control" id="sel2" onchange="compare_button();" name="package_detail_second">
                 <option>None</option>
                 {% for failed_package in response['most_failed_packages'] %}
