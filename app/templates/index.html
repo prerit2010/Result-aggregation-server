@@ -228,21 +228,6 @@
   </div>
   
   <script type="text/javascript">
-    function compare_button(){
-      if(document.getElementById('sel2').value != "None" && document.getElementById('sel1').value != "None"){
-        document.getElementById('submit_button').value = "Compare";
-        document.getElementById('submit_button').disabled = false;
-      }
-      else{
-        if(document.getElementById('sel1').value != "None"){
-          document.getElementById('submit_button').value = "Submit";
-          document.getElementById('submit_button').disabled = false;
-        }
-        else
-          document.getElementById('submit_button').disabled = true;
-      }
-      return true;
-    }
     func_os_user({{ response['os_users']|tojson}});
     func_failed_installs({{ response['most_failed_packages']|tojson}});
     func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
