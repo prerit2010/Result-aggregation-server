@@ -300,8 +300,14 @@ def data_view_detail_package():
     version = request.args.get('package_version')
     package_detail = request.args.get('package_detail')
     if package_detail:
-        package_name = request.args.get('package_detail').split('|')[0]
-        version = request.args.get('package_detail').split('|')[1]
+        try:
+            package_name = request.args.get('package_detail').split('|')[0]
+            version = request.args.get('package_detail').split('|')[1]
+        except:
+            package_name = None
+            version = None
+    if package_name is None:
+        return redirect(url_for('data_view'))
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
     if all_attempts:
