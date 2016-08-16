@@ -299,28 +299,31 @@ def data_view_by_workshop(workshop_id):
 
 @application.route('/view/detail/')
 def data_view_detail_package():
-    package_name = request.args.get('package_name')
-    version = request.args.get('package_version')
-    package_detail_first = request.args.get('package_detail_first')
-    package_detail_second = request.args.get('package_detail_second')
-    first_package_all_versions = request.args.get("first_package_all_versions")
-    second_package_all_versions = request.args.get("second_package_all_versions")
-    if package_detail_first:
-        try:
-            package_name_first = package_detail_first.split('|')[0]
-            package_version_first = package_detail_first.split('|')[1]
-        except:
-            package_name_first = None
-            package_version_first = None
-    if package_detail_second:
-        try:
-            package_name_second = package_detail_second.split('|')[0]
-            package_version_second = package_detail_second.split('|')[1]
-        except:
-            package_name_second = None
-            package_version_second = None
+    package_one_name = request.args.get('package_one_name')
+    package_one_version = request.args.get('package_one_version')
+    package_two_name = request.args.get('package_two_name')
+    package_two_version = request.args.get('package_two_version')
+    if package_one_version == "null":
+        package_one_version = None
+    if package_two_name and package_two_name == "None":
+        package_two_name = None
 
-    if package_name_first is None:
+    # if package_one_name:
+    #     try:
+    #         package_name_first = package_detail_first.split('|')[0]
+    #         package_version_first = package_detail_first.split('|')[1]
+    #     except:
+    #         package_name_first = None
+    #         package_version_first = None
+    # if package_detail_second:
+    #     try:
+    #         package_name_second = package_detail_second.split('|')[0]
+    #         package_version_second = package_detail_second.split('|')[1]
+    #     except:
+    #         package_name_second = None
+    #         package_version_second = None
+
+    if package_one_name is None:
         return redirect(url_for('data_view'))
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
@@ -329,14 +332,12 @@ def data_view_detail_package():
     # if package_name_second and package_name_second == package_name_first:
     failed_packages = [
         {
-            "package_name": package_name_first,
-            "version": package_version_first,
-            "all_versions": first_package_all_versions
+            "package_name": package_one_name,
+            "version": package_one_version,
         },
         {
-            "package_name": package_name_second,
-            "version": package_version_second,
-            "all_versions": second_package_all_versions
+            "package_name": package_two_name,
+            "version": package_two_version,
         }
     ]
     response = []
@@ -345,7 +346,7 @@ def data_view_detail_package():
             continue
         if all_attempts:
             if workshop_id:
-                if failed_package['all_versions']:
+                if not failed_package['version']:
                     user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -356,7 +357,6 @@ def data_view_detail_package():
                         UserSystemInfo.workshop_id == workshop_id
                     )
                 else:
-                    print("_versions")
                     user_info = db.session.query(FailedInstalls, UserSystemInfo).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -368,7 +368,7 @@ def data_view_detail_package():
                         UserSystemInfo.workshop_id == workshop_id
                     )
             else:
-                if failed_package['all_versions']:
+                if not failed_package['version']:
                     user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -378,7 +378,6 @@ def data_view_detail_package():
                         FailedInstalls.name == failed_package['package_name'],
                     )
                 else:
-                    print("_versions")
                     user_info = db.session.query(UserSystemInfo, FailedInstalls).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -399,7 +398,7 @@ def data_view_detail_package():
 
                 latest_attempt_ids = [x.attempt_id for x in attempts]
 
-                if failed_package['all_versions']:
+                if not failed_package['version']:
                     user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -411,7 +410,6 @@ def data_view_detail_package():
                         UserSystemInfo.workshop_id == workshop_id
                     )
                 else:
-                    print("_versions")
                     user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -428,8 +426,7 @@ def data_view_detail_package():
 
                 attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
                 latest_attempt_ids = [x[0] for x in attempts]
-                if failed_package['all_versions']:
-                    print("all_versions")
+                if not failed_package['version']:
                     user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -440,7 +437,6 @@ def data_view_detail_package():
                         FailedInstalls.attempt_id.in_(latest_attempt_ids)
                     )
                 else:
-                    print("_versions")
                     user_info = db.session.query(FailedInstalls, UserSystemInfo.id).add_columns(
                         UserSystemInfo.distribution_name, UserSystemInfo.distribution_version,
                         UserSystemInfo.system, UserSystemInfo.system_platform,
@@ -490,7 +486,7 @@ def data_view_detail_package():
         system_platform = sorted(system_platform.items(), key=operator.itemgetter(1), reverse=True)
         system_version = sorted(system_version.items(), key=operator.itemgetter(1), reverse=True)
         machine = sorted(machine.items(), key=operator.itemgetter(1), reverse=True)
-        if failed_package['all_versions']:
+        if not failed_package['version']:
             failed_package['version'] = ""
         resp = {
             "package_name": failed_package['package_name'],
@@ -508,7 +504,6 @@ def data_view_detail_package():
             "create_time": create_time,
             "workshop_id": workshop_id,
             "all_attempts": all_attempts,
-            "all_versions": failed_package['all_versions']
         }
         response.append(resp)
 

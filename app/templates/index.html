@@ -59,29 +59,40 @@
               {% if response['all_attempts'] %}
                 <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
               {% endif %}
-              <select class="form-control" id="sel1" onchange="compare_button();" name="package_detail_first">
+              <select class="form-control" id="package_one_name" onchange="compare_button(); get_versions_one(this.value, {{response['most_failed_packages']}});" name="package_one_name">
                 <option>None</option>
                 {% for failed_package in response['most_failed_packages'] %}
-                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                  <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
                 {% endfor %}
               </select>
               {% if not response['all_workshops'] %}
                 <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
               {% endif %}
-              <input type="checkbox" name="first_package_all_versions"> All versions </input>
           </div>   
         </li>
-
+        <li>
+          <div class="form-group container-fluid" id="version_one" style="display:none">
+            <label for="sel1">Version :</label>
+            <select class="form-control" id="package_one_version"  name="package_one_version">
+              </select> 
+          </div>   
+        </li>
         <li>
           <div class="form-group container-fluid">
             <label for="sel1">Also compare with :</label>
-              <select class="form-control" id="sel2" onchange="compare_button();" name="package_detail_second">
+              <select class="form-control" id="package_two_name" onchange="compare_button(); get_versions_two(this.value, {{response['most_failed_packages']}});" name="package_two_name">
                 <option>None</option>
                 {% for failed_package in response['most_failed_packages'] %}
-                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                  <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
                 {% endfor %}
               </select>
-              <input type="checkbox" name="second_package_all_versions"> All versions </input>
+          </div>   
+        </li>
+        <li>
+          <div class="form-group container-fluid" id="version_two" style="display:none">
+            <label for="package_two_version">Version :</label>
+            <select class="form-control" id="package_two_version"  name="package_two_version">
+              </select> 
           </div>   
         </li>
         <li>
