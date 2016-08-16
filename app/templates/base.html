@@ -13,9 +13,9 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   </HEAD>
   {% if response['most_failed_packages'] %}
-    <BODY onload="SelectElement('{{response['workshop_id']}}', {{response['most_failed_packages']}});">
+    <BODY onload="on_page_load('{{response['workshop_id']}}', {{response['most_failed_packages']}}); compare_button();">
   {% else %}
-    <BODY onload="SelectElement('{{response['workshop_id']}}', null);">
+    <BODY onload="on_page_load('{{response['workshop_id']}}', null); compare_button();">
   {% endif %}    
     <div class="container-fluid">
 

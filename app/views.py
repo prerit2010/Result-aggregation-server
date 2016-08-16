@@ -7,6 +7,7 @@ from collections import Counter
 import uuid
 import datetime
 import operator
+import json
 
 
 @application.errorhandler(500)
@@ -303,33 +304,19 @@ def data_view_detail_package():
     package_one_version = request.args.get('package_one_version')
     package_two_name = request.args.get('package_two_name')
     package_two_version = request.args.get('package_two_version')
+    if package_one_name is None:
+        return redirect(url_for('data_view'))
     if package_one_version == "null":
         package_one_version = None
     if package_two_name and package_two_name == "None":
         package_two_name = None
+    if package_two_version and package_two_version == "null":
+        package_two_version = None
 
-    # if package_one_name:
-    #     try:
-    #         package_name_first = package_detail_first.split('|')[0]
-    #         package_version_first = package_detail_first.split('|')[1]
-    #     except:
-    #         package_name_first = None
-    #         package_version_first = None
-    # if package_detail_second:
-    #     try:
-    #         package_name_second = package_detail_second.split('|')[0]
-    #         package_version_second = package_detail_second.split('|')[1]
-    #     except:
-    #         package_name_second = None
-    #         package_version_second = None
-
-    if package_one_name is None:
-        return redirect(url_for('data_view'))
     workshop_id = request.args.get('workshop_id')
     all_attempts = request.args.get('all_attempts')
     if all_attempts:
         all_attempts = int(all_attempts)
-    # if package_name_second and package_name_second == package_name_first:
     failed_packages = [
         {
             "package_name": package_one_name,
@@ -508,8 +495,6 @@ def data_view_detail_package():
         response.append(resp)
 
     if request.args.get('export') == 'json':
-        # print(response)
-        import json
         return make_response(json.dumps(response))
 
     return render_template('details.html', response=response)

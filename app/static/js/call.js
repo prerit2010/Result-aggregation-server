@@ -1,4 +1,4 @@
-function SelectElement(valueToSelect, most_failed_packages)
+function on_page_load(valueToSelect, most_failed_packages)
 {    
   document.getElementById('sel_workshop').value = valueToSelect;
   if(!most_failed_packages)
@@ -9,7 +9,7 @@ function SelectElement(valueToSelect, most_failed_packages)
   }
   if(document.getElementById('package_two_name').value != "None"){
   	document.getElementById('version_two').style.display = "block";
-  	get_versions_one(document.getElementById('package_two_name').value, most_failed_packages);
+  	get_versions_two(document.getElementById('package_two_name').value, most_failed_packages);
   }
 }
 
