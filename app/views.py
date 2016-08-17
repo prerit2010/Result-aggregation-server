@@ -306,11 +306,11 @@ def data_view_detail_package():
     package_two_version = request.args.get('package_two_version')
     if package_one_name is None:
         return redirect(url_for('data_view'))
-    if package_one_version == "null":
+    if package_one_version == "All":
         package_one_version = None
     if package_two_name and package_two_name == "None":
         package_two_name = None
-    if package_two_version and package_two_version == "null":
+    if package_two_version and package_two_version == "All":
         package_two_version = None
 
     workshop_id = request.args.get('workshop_id')

@@ -45,8 +45,8 @@ function get_versions_one(package, most_failed_packages){
 	var package_select_id = document.getElementById('package_one_version');
 	document.getElementById('version_one').style.display = "block";
 	var opt = document.createElement('option');
-    opt.innerHTML = "None";
-    opt.value = null;
+    opt.innerHTML = "All";
+    opt.value = "All";
     package_select_id.appendChild(opt);
 	for(var i = 0; i < versions.length ; i++){
 		var opt = document.createElement('option');
@@ -71,8 +71,8 @@ function get_versions_two(package, most_failed_packages){
 	var package_select_id = document.getElementById('package_two_version');
 	document.getElementById('version_two').style.display = "block";
 	var opt = document.createElement('option');
-    opt.innerHTML = "None";
-    opt.value = null;
+    opt.innerHTML = "All";
+    opt.value = "All";
     package_select_id.appendChild(opt);
 	for(var i = 0; i < versions.length ; i++){
 		var opt = document.createElement('option');
