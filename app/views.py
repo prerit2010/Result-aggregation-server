@@ -300,13 +300,19 @@ def data_view_by_workshop(workshop_id):
 
 @application.route('/view/detail/')
 def data_view_detail_package():
+    """
+    This endpoint returns the details of the selected package(s). It returns the result
+    in json as well with 'export=json' as url parameter. Results are viewed in the
+    form of plots and tables on details.html
+    """
+
     package_one_name = request.args.get('package_one_name')
     package_one_version = request.args.get('package_one_version')
     package_two_name = request.args.get('package_two_name')
     package_two_version = request.args.get('package_two_version')
     if package_one_name is None:
         return redirect(url_for('data_view'))
-    if package_one_version == "All":
+    if package_one_version == "All":  # if all versions is selected, turn the version selected to None
         package_one_version = None
     if package_two_name and package_two_name == "None":
         package_two_name = None
@@ -328,8 +334,8 @@ def data_view_detail_package():
         }
     ]
     response = []
-    for failed_package in failed_packages:
-        if not failed_package['package_name']:
+    for failed_package in failed_packages:  # iterate over the loop of 2 packages
+        if not failed_package['package_name']:  # in case only 1 package is selected
             continue
         if all_attempts:
             if workshop_id:
@@ -457,6 +463,8 @@ def data_view_detail_package():
             fail_date_time = user.create_time
             create_time.append(str(datetime.datetime.date(fail_date_time)))
 
+        # Delete all None from the lists and count the frequency of each entity using Counter.
+        # This create a dictionary with key as entity and count as its value.
         distribution_name = Counter(filter(None, distribution_name))
         distribution_version = Counter(filter(None, distribution_version))
         distribution_name_version = Counter(filter(None, distribution_name_version))
@@ -467,6 +475,7 @@ def data_view_detail_package():
         python_version = Counter(filter(None, python_version))
         create_time = Counter(filter(None, create_time))
 
+        #  Sort the dictionaries on counts of each key. This converts them to lists.
         python_version = sorted(python_version.items(), key=operator.itemgetter(1), reverse=True)
         system = sorted(system.items(), key=operator.itemgetter(1), reverse=True)
         distribution_name_version = sorted(distribution_name_version.items(), key=operator.itemgetter(1), reverse=True)
