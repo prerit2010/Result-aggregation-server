@@ -41,61 +41,61 @@ function compare_button(){
 }
 
 
-function get_versions_one(package, most_failed_packages){
+function get_versions_one(package_name, most_failed_packages){
 	/* This function populates the version dropdown of the first package, as soon as
 	 * the package is selected.
 	*/
-	if(package == "None"){
+	if(package_name == "None"){
 		document.getElementById('version_one').style.display = 'none';
 		return;
 	}
-	var package_name = package;
-	var versions = [];
-	for(var i = 0; i < most_failed_packages.length ; i++){
-		if(most_failed_packages[i]['name'] == package_name)
-			versions.push(most_failed_packages[i]['version']);
-	}
+	// Clear the versions dropdown before filling it
 	document.getElementById('package_one_version').options.length = 0;
 	var package_select_id = document.getElementById('package_one_version');
 	document.getElementById('version_one').style.display = "block";
+	// Create options for the versions drowpdown
 	var opt = document.createElement('option');
     opt.innerHTML = "All";
     opt.value = "All";
     package_select_id.appendChild(opt);
-	for(var i = 0; i < versions.length ; i++){
-		var opt = document.createElement('option');
-    	opt.innerHTML = versions[i];
-    	opt.value = versions[i];
-    	package_select_id.appendChild(opt);
+
+	for(var i = 0; i < most_failed_packages.length ; i++){
+		// find all the versions of this package and add option for each in dropdown
+		if(most_failed_packages[i]['name'] == package_name){
+			var opt = document.createElement('option');
+			opt.innerHTML = most_failed_packages[i]['version'];
+			opt.value = most_failed_packages[i]['version'];
+			package_select_id.appendChild(opt);
+		}
 	}
 }
 
 
-function get_versions_two(package, most_failed_packages){
+function get_versions_two(package_name, most_failed_packages){
 	/* This function populates the version dropdown of the second package, as soon as
 	 * the package is selected.
 	*/
-	if(package == "None"){
+	if(package_name == "None"){
 		document.getElementById('version_two').style.display = 'none';
 		return;
 	}
-	var package_name = package;
-	var versions = [];
-	for(var i = 0; i < most_failed_packages.length ; i++){
-		if(most_failed_packages[i]['name'] == package_name)
-			versions.push(most_failed_packages[i]['version']);
-	}
+	// Clear the versions dropdown before filling it
 	document.getElementById('package_two_version').options.length = 0;
 	var package_select_id = document.getElementById('package_two_version');
 	document.getElementById('version_two').style.display = "block";
+	// Create options for the versions drowpdown
 	var opt = document.createElement('option');
     opt.innerHTML = "All";
     opt.value = "All";
     package_select_id.appendChild(opt);
-	for(var i = 0; i < versions.length ; i++){
-		var opt = document.createElement('option');
-    	opt.innerHTML = versions[i];
-    	opt.value = versions[i];
-    	package_select_id.appendChild(opt);
+
+	for(var i = 0; i < most_failed_packages.length ; i++){
+		// find all the versions of this package and add option for each in dropdown
+		if(most_failed_packages[i]['name'] == package_name){
+			var opt = document.createElement('option');
+			opt.innerHTML = most_failed_packages[i]['version'];
+			opt.value = most_failed_packages[i]['version'];
+			package_select_id.appendChild(opt);
+		}
 	}
 }
