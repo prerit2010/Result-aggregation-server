@@ -5,7 +5,7 @@
   <div class="row">
     <div class="col-sm-3 col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <li class="active"><a href="#"><h3 class="text-center">{{response['workshop_id']}}<span class="sr-only">(current)</span></h3></a>
+        <li class="active">
         </li>
       </ul>
       <ul class="nav nav-sidebar">
@@ -18,29 +18,10 @@
                 <option value="{{workshop}}">{{workshop}}</option>
               {% endfor %}
             </select>
-          </div> 
+          </div>
         </li>
       </ul>
       <ul class="nav nav-sidebar">
-        <li>
-          <div class="form-group container-fluid">
-            <label for="sel1">Filter by failed package :</label>
-            <form action="/view/detail/" method="GET">
-              {% if response['all_attempts'] %}
-                <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
-              {% endif %}
-              <select class="form-control" id="sel1" onchange="this.form.submit()" name="package_detail">
-                <option>None</option>
-                {% for failed_package in response['most_failed_packages'] %}
-                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
-                {% endfor %}
-              </select>
-              {% if not response['all_workshops'] %}
-                <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
-              {% endif %}   
-            </form>
-          </div>   
-        </li>
         <li>
           <div class="container-fluid">
             <label>Filter by attempts:</label>
@@ -70,6 +51,47 @@
           </div>
         </li>
       </ul>
+      <ul class="nav nav-sidebar">
+        <form action="/view/detail/" method="GET">
+        <li>
+          <div class="form-group container-fluid">
+            <label for="sel1">Filter by failed package :</label>
+              {% if response['all_attempts'] %}
+                <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
+              {% endif %}
+              <select class="form-control" id="sel1" onchange="compare_button();" name="package_detail_first">
+                <option>None</option>
+                {% for failed_package in response['most_failed_packages'] %}
+                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                {% endfor %}
+              </select>
+              {% if not response['all_workshops'] %}
+                <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
+              {% endif %}
+              <input type="checkbox" name="first_package_all_versions"> All versions </input>
+          </div>   
+        </li>
+
+        <li>
+          <div class="form-group container-fluid">
+            <label for="sel1">Also compare with :</label>
+              <select class="form-control" id="sel2" onchange="compare_button();" name="package_detail_second">
+                <option>None</option>
+                {% for failed_package in response['most_failed_packages'] %}
+                  <option value="{{failed_package['name']}}|{{failed_package['version']}}">{{failed_package['name']}} ({{failed_package['version']}})</option>
+                {% endfor %}
+              </select>
+              <input type="checkbox" name="second_package_all_versions"> All versions </input>
+          </div>   
+        </li>
+        <li>
+          <div class="container">
+            <input id="submit_button" onclick="this.form.submit();" class="btn btn-primary" value="Submit" disabled>
+          </div>
+        </li>
+        </form>
+      </ul>  
+      </ul>
     </div>
   </div>
 
@@ -78,6 +100,7 @@
   <!-- MOST failed packages -->
   <!-- ===================================================================== -->
 
+  <h3 class="text-center bg-primary"> Workshop selected: {{response['workshop_id']}}</h3>
   <div class="row">
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <div class="panel panel-default">

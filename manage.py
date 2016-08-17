@@ -39,7 +39,7 @@ def import_db(overwrite=False):
             print("\nDatabase already contains some data. To overwrite the existing data, please use the option --overwrite")
             sys.exit(0)
     print("\nImporting sample data....\n")
-    with open('sample.sql', 'r') as f:
+    with open('sample', 'r') as f:
         sql = f.read()
     con.executescript(sql)
     con.close()

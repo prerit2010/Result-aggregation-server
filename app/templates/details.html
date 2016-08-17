@@ -2,32 +2,41 @@
 
 {% block content_plots %}
 
-  <div class="main">
+  <div class="main" style="margin-top : 50px;">
+  
     <div class="row">
+    {% for package in response %}
       <div class="col-md-6">
-        <H3><b>Package name :</b> {{response['package_name']}}</H3>
+        <H3><b>Package name :</b> {{package['package_name']}}</H3>
       </div>
       <div class="col-md-6">
-        <H3><b>Version :</b> {{response['package_version']}}</H3>
-      </div>
-      
-      <div class="col-md-6">
-        {% if response['workshop_id'] %}
-          <H3><b>Workshop :</b> {{response['workshop_id']}}</H3>
+        {% if package['package_version'] != "" %}
+          <H3><b>Version :</b> {{package['package_version']}}</H3>
         {% else %}
-          <H3><b>Workshop :</b> All workshops</H3>
+          <H3><b>Version :</b> All versions</H3>
         {% endif %}
       </div>
-      <div class="col-md-6">
-        {% if response['all_attempts'] %}
-          <H3><b>All Attempts</b></H3>
-        {% else %}
-          <H3><b>Latest Attempt</b></H3>
-        {% endif  %}
-      </div>
-    </div>
+      {% endfor %}
+   
 
-    {% if not response['workshop_id'] %}
+    <div class="col-md-6">
+      {% if response[0]['workshop_id'] %}
+        <H3><b>Workshop :</b> {{response[0]['workshop_id']}}</H3>
+      {% else %}
+        <H3><b>Workshop :</b> All workshops</H3>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      {% if response[0]['all_attempts'] %}
+        <H3><b>All Attempts</b></H3>
+      {% else %}
+        <H3><b>Latest Attempt</b></H3>
+      {% endif  %}
+    </div>
+     </div>
+  
+
+    {% if not response[0]['workshop_id'] %}
       <div class="row">
         <div class="col-md-12">
           <div class="panel panel-default">
@@ -54,6 +63,9 @@
             <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_python_user" aria-expanded="false" aria-controls="collapse_python_user">
               Show in Tabular form </button>
             <div class="collapse" id="collapse_python_user">
+            {% for package in response%}
+            <div class="col-md-6">
+            <h4 class="text-center">{{package['package_name']}} {{package['package_version']}}</h4>
               <table class="table table-bordered table-striped">
                 <thead>
                   <tr>
@@ -62,14 +74,16 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for value in response['user_system_info']['python_version'] %}
+                  {% for value in package['user_system_info']['python_version'] %}
                     <tr>    
                       <td>{{ value[0] }}</td>
                       <td>{{ value[1] }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
-              </table>    
+              </table> 
+              </div> 
+              {% endfor %}   
             </div>
           </div>
         </div>
@@ -87,6 +101,9 @@
             <div id="os_user_by_package" style="height: 400px"></div>
             <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_os_user" aria-expanded="false" aria-controls="collapse_os_user">Show in Tabular form</button>
             <div class="collapse" id="collapse_os_user">
+            {% for package in response%}
+            <div class="col-md-6">
+            <h4 class="text-center">{{package['package_name']}} {{package['package_version']}}</h4>
               <table class="table table-bordered table-striped">
                 <thead>
                   <tr>
@@ -95,7 +112,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for value in response['user_system_info']['system'] %}
+                  {% for value in package['user_system_info']['system'] %}
                     <tr>
                       <td>{{ value[0] }}</td>
                       <td>{{ value[1] }}</td>
@@ -103,6 +120,8 @@
                   {% endfor %}
                 </tbody>
               </table>
+              </div>
+            {% endfor %}
             </div>
           </div>
         </div>
@@ -110,7 +129,7 @@
     </div>
 
     <hr>
-    {% if response['user_system_info']['distribution_name_version'] %}
+    {% if response[0]['user_system_info']['distribution_name_version'] %}
       <div class="row">
         <div class="col-md-12">
           <div class="panel panel-default">
@@ -121,6 +140,9 @@
               <div id="os_user_dist_by_package" style="height: 400px"></div>
               <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_os_dist_user" aria-expanded="false" aria-controls="collapse_os_dist_user">Show in Tabular form</button>
               <div class="collapse" id="collapse_os_dist_user">
+              {% for package in response %}
+                <div class="col-md-6">
+                <h4 class="text-center">{{package['package_name']}} {{package['package_version']}}</h4>
                 <table class="table table-bordered table-striped">
                   <thead>
                     <tr>
@@ -129,7 +151,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    {% for value in response['user_system_info']['distribution_name_version'] %}
+                    {% for value in package['user_system_info']['distribution_name_version'] %}
                       <tr>    
                         <td>{{ value[0] }}</td>
                         <td>{{ value[1] }}</td>
@@ -137,6 +159,8 @@
                    {% endfor %}
                   </tbody>
                 </table>
+                </div>
+              {% endfor %}
               </div>
             </div>
           </div>
@@ -152,6 +176,9 @@
             <h3 class="panel-title text-center"><b>Machines</b></h3>
           </div>
           <div class="panel-body">
+          {% for package in response %}
+                <div class="col-md-6">
+                <h4 class="text-center">{{package['package_name']}} {{package['package_version']}}</h4>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -160,14 +187,16 @@
                 </tr>
               </thead>
               <tbody>
-                {% for value in response['user_system_info']['machine'] %}
+                {% for value in package['user_system_info']['machine'] %}
                   <tr>    
                     <td>{{ value[0] }}</td>
                     <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
-            </table>  
+            </table> 
+            </div>
+            {% endfor %} 
           </div>
         </div>
       </div>
@@ -181,7 +210,10 @@
           <div class="panel-heading panel-heading-custom">
             <h3 class="panel-title text-center"><b>System Version</b></h3>
           </div>
-          <div class="panel-body">     
+          <div class="panel-body">  
+          {% for package in response %}
+                <div class="col-md-6">   
+                <h4 class="text-center">{{package['package_name']}} {{package['package_version']}}</h4>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -190,14 +222,16 @@
                 </tr>
               </thead>
               <tbody>
-                {% for value in response['user_system_info']['system_version'] %}
+                {% for value in package['user_system_info']['system_version'] %}
                   <tr>    
                     <td>{{ value[0] }}</td>
                     <td>{{ value[1] }}</td>
                     </tr>
                 {% endfor %}
               </tbody>
-            </table> 
+            </table>
+             </div>
+            {% endfor %} 
           </div>
         </div>
       </div>
@@ -211,7 +245,10 @@
           <div class="panel-heading panel-heading-custom">
             <h3 class="panel-title text-center"><b>System Platform</b></h3>
           </div>
-          <div class="panel-body">      
+          <div class="panel-body"> 
+          {% for package in response %}
+                <div class="col-md-6">
+                <h4 class="text-center">{{package['package_name']}} {{package['version']}}</h4>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -220,14 +257,16 @@
                 </tr>
               </thead>
               <tbody>
-                {% for value in response['user_system_info']['system_platform'] %}
+                {% for value in package['user_system_info']['system_platform'] %}
                   <tr>    
                     <td>{{ value[0] }}</td>
                     <td>{{ value[1] }}</td>
                   </tr>
                 {% endfor %}
               </tbody>
-            </table>    
+            </table>
+             </div>
+            {% endfor %}     
           </div>
         </div>
       </div>
@@ -236,14 +275,26 @@
     <hr >
   </div>
     <script type="text/javascript">
-      func_python_users({{response['user_system_info']['python_version']|tojson}});
-      func_os_user_for_package({{response['user_system_info']['system']|tojson}});
-      {% if response['user_system_info']['distribution_name_version'] %}
-        func_os_user_dist_for_package({{response['user_system_info']['distribution_name_version']|tojson}});
+    {% if response|length == 2 %}
+      func_python_users({{response[0]['user_system_info']['python_version']|tojson}}, {{response[1]['user_system_info']['python_version']|tojson }}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      func_os_user_for_package({{response[0]['user_system_info']['system']|tojson}}, {{response[1]['user_system_info']['system']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
+      {% if response[0]['user_system_info']['distribution_name_version'] %}
+        func_os_user_dist_for_package({{response[0]['user_system_info']['distribution_name_version']|tojson}}, {{response[1]['user_system_info']['distribution_name_version']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
       {% endif %}
       {% if not response['workshop_id'] %}
-        func_failed_package_time_series({{response['create_time']|tojson}});
+        func_failed_package_time_series({{response[0]['create_time']|tojson}}, {{response[1]['create_time']|tojson}}, {{response[0]['package_name']|tojson}}, {{response[1]['package_name']|tojson}});
       {% endif %}
-    </script>
+    {% else %}
+      func_python_users({{response[0]['user_system_info']['python_version']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      func_os_user_for_package({{response[0]['user_system_info']['system']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% if response[0]['user_system_info']['distribution_name_version'] %}
+        func_os_user_dist_for_package({{response[0]['user_system_info']['distribution_name_version']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% endif %}
+      {% if not response['workshop_id'] %}
+        func_failed_package_time_series({{response[0]['create_time']|tojson}}, null, {{response[0]['package_name']|tojson}}, null);
+      {% endif %}
+    {% endif %}
+
+  </script>
 
 {% endblock %}

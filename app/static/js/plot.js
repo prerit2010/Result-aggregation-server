@@ -216,20 +216,37 @@ function func_failed_installs_names(most_failed_packages){
     Plotly.newPlot('failed_package_names', data, layout, mode_bar_global_settings);
 }
 
-function func_python_users(python_version){
-    var x_values = []
-    var y_values = []
-    for(var i = 0, size = python_version.length; i < size ; i++){
-       x_values.push(python_version[i][0]);
-       y_values.push(python_version[i][1]);
+function func_python_users(python_version_one, python_version_two, package_name_one, package_name_two){
+    var x_values = [];
+    var y_values = [];
+    for(var i = 0, size = python_version_one.length; i < size ; i++){
+       x_values.push(python_version_one[i][0]);
+       y_values.push(python_version_one[i][1]);
     }
-    var data = [
-        {
+    var trace1 = {
+        x: x_values,
+        y: y_values,
+        name: package_name_one,
+        type: 'bar'
+    };
+    if(python_version_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = python_version_two.length; i < size ; i++){
+           x_values.push(python_version_two[i][0]);
+           y_values.push(python_version_two[i][1]);
+        }
+        var trace2 = {
             x: x_values,
             y: y_values,
+            name: package_name_two,
             type: 'bar'
-        }
-    ];
+        };
+
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1]
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -246,7 +263,7 @@ function func_python_users(python_version){
 
     var layout = {
         title: '',
-        showlegend: false,
+        barmode: 'group',
         xaxis : {
             title : 'Python versions'
         },
@@ -259,20 +276,37 @@ function func_python_users(python_version){
 
 }
 
-function func_os_user_for_package(system){
-    var x_values = []
-    var y_values = []
-    for(var i = 0, size = system.length; i < size ; i++){
-       x_values.push(system[i][0]);
-       y_values.push(system[i][1]);
+function func_os_user_for_package(os_users_one, os_users_two, package_name_one, package_name_two){
+    var x_values = [];
+    var y_values = [];
+    for(var i = 0, size = os_users_one.length; i < size ; i++){
+       x_values.push(os_users_one[i][0]);
+       y_values.push(os_users_one[i][1]);
     }
-    var data = [
-        {
+    var trace1 = {
+        x: x_values,
+        y: y_values,
+        name: package_name_one,
+        type: 'bar'
+    };
+    if(os_users_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = os_users_two.length; i < size ; i++){
+           x_values.push(os_users_two[i][0]);
+           y_values.push(os_users_two[i][1]);
+        }
+        var trace2 = {
             x: x_values,
             y: y_values,
+            name: package_name_two,
             type: 'bar'
-        }
-    ];
+        };
+
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -289,9 +323,9 @@ function func_os_user_for_package(system){
 
     var layout = {
         title: '',
-        showlegend: false,
+        barmode: 'group',
         xaxis : {
-            title : 'Operating System'
+            title : 'Python versions'
         },
         yaxis : {
             title : 'Number of users'
@@ -299,23 +333,41 @@ function func_os_user_for_package(system){
         annotations: annotations_content
     };
     Plotly.newPlot('os_user_by_package', data, layout, mode_bar_global_settings);
+
 }
 
 
-function func_os_user_dist_for_package(system){
-    var x_values = []
-    var y_values = []
-    for(var i = 0, size = system.length; i < size ; i++){
-       x_values.push(system[i][0]);
-       y_values.push(system[i][1]);
+function func_os_user_dist_for_package(linux_dist_package_one, linux_dist_package_two, package_name_one, package_name_two){
+    var x_values = [];
+    var y_values = [];
+    for(var i = 0, size = linux_dist_package_one.length; i < size ; i++){
+       x_values.push(linux_dist_package_one[i][0]);
+       y_values.push(linux_dist_package_one[i][1]);
     }
-    var data = [
-        {
+    var trace1 = {
+        x: x_values,
+        y: y_values,
+        name: package_name_one,
+        type: 'bar'
+    };
+    if(linux_dist_package_two){
+        var x_values = [];
+        var y_values = [];
+        for(var i = 0, size = linux_dist_package_two.length; i < size ; i++){
+           x_values.push(linux_dist_package_two[i][0]);
+           y_values.push(linux_dist_package_two[i][1]);
+        }
+        var trace2 = {
             x: x_values,
             y: y_values,
+            name: package_name_two,
             type: 'bar'
-        }
-    ];
+        };
+
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
 
     var annotations_content = [];
     for( var i = 0 ; i < x_values.length ; i++ ){
@@ -332,9 +384,10 @@ function func_os_user_dist_for_package(system){
 
     var layout = {
         title: '',
-        showlegend: false,
+        showlegend: true,
+        barmode: 'group',
         xaxis : {
-            title : 'Distributions'
+            title : 'Linux Distributions'
         },
         yaxis : {
             title : 'Number of users'
@@ -346,29 +399,62 @@ function func_os_user_dist_for_package(system){
 }
 
 
-function func_failed_package_time_series(create_time){
-    var x_values = []
-    var y_values = []
-    for (var key in create_time) {
+function func_failed_package_time_series(create_time_package_one, create_time_package_two, package_name_one, package_name_two){
+    var x_values = [];
+    var y_values = [];
+    for (var key in create_time_package_one) {
         x_values.push(key);
-        y_values.push(create_time[key]);
+        y_values.push(create_time_package_one[key]);
     }
-    var data = [
-        {
+    var trace1 = {
+        x: x_values,
+        y: y_values,
+        name: package_name_one,
+        type: 'scatter'
+    };
+    if(create_time_package_two){
+        var x_values = [];
+        var y_values = [];
+        for (var key in create_time_package_two) {
+            x_values.push(key);
+            y_values.push(create_time_package_two[key]);
+        }
+        var trace2 = {
             x: x_values,
             y: y_values,
+            name: package_name_two,
             type: 'scatter'
-        }
-    ];
-    var layout = {
-            title: '',
-            xaxis : {
-                title : 'Time'
-            },
-            yaxis : {
-                title : 'Number of users'
-            }
         };
 
+        var data = [trace1, trace2];
+    }
+    else
+        var data = [trace1];
+
+    var annotations_content = [];
+    for( var i = 0 ; i < x_values.length ; i++ ){
+        var result = {
+            x: x_values[i],
+            y: y_values[i],
+            text: y_values[i],
+            xanchor: 'center',
+            yanchor: 'bottom',
+            showarrow: false
+        };
+        annotations_content.push(result);
+    }
+
+    var layout = {
+        title: '',
+        barmode: 'group',
+        xaxis : {
+            title : 'Time'
+        },
+        yaxis : {
+            title : 'Number of users'
+        },
+        annotations: annotations_content
+    };
     Plotly.newPlot('create_time', data, layout, mode_bar_global_settings);
+
 }
