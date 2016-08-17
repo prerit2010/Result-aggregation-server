@@ -1,19 +1,30 @@
+
 function on_page_load(valueToSelect, most_failed_packages){
+	/* This function is called by base.html as soon as the page loads.
+	 * It sets the workshop Id and also populates the versions dropdowns by
+	 * calling get_versions_one() and get_versions_two() if the package
+	 * selected is not None.
+	*/
 	document.getElementById('sel_workshop').value = valueToSelect;
   	if(!most_failed_packages)
   		return;
   	if(document.getElementById('package_one_name').value != "None"){
-  		document.getElementById('version_one').style.display = "block";
+  		document.getElementById('version_one').style.display = "block"; // Show the versions div
   		get_versions_one(document.getElementById('package_one_name').value, most_failed_packages);
   	}
   	if(document.getElementById('package_two_name').value != "None"){
-  		document.getElementById('version_two').style.display = "block";
+  		document.getElementById('version_two').style.display = "block"; // Show the versions div
   		get_versions_two(document.getElementById('package_two_name').value, most_failed_packages);
   	}
 }
 
 
 function compare_button(){
+	/* This functions decides between the values of submit button
+	 * ('Submit' or 'Compare'). If packages from both the dropdowns are selected,
+	 * the value is changed to 'Compare', otherwise it remains 'Submit'. It also disables
+	 * the button if no package is selected from the first dropdown of failed packages.
+	*/
 	if(document.getElementById('package_two_name').value != "None" && document.getElementById('package_one_name').value != "None"){
     	document.getElementById('submit_button').value = "Compare";
     	document.getElementById('submit_button').disabled = false;
@@ -31,6 +42,9 @@ function compare_button(){
 
 
 function get_versions_one(package, most_failed_packages){
+	/* This function populates the version dropdown of the first package, as soon as
+	 * the package is selected.
+	*/
 	if(package == "None"){
 		document.getElementById('version_one').style.display = 'none';
 		return;
@@ -56,7 +70,11 @@ function get_versions_one(package, most_failed_packages){
 	}
 }
 
+
 function get_versions_two(package, most_failed_packages){
+	/* This function populates the version dropdown of the second package, as soon as
+	 * the package is selected.
+	*/
 	if(package == "None"){
 		document.getElementById('version_two').style.display = 'none';
 		return;
