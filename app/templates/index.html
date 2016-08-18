@@ -111,7 +111,48 @@
   <!-- MOST failed packages -->
   <!-- ===================================================================== -->
 
-  <h3 class="text-center bg-primary"> Workshop selected: {{response['workshop_id']}}</h3>
+  <div class="row" style="margin-top: 50px;">
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+      <div class="panel panel-default">
+        <div class="panel-heading panel-heading-custom">
+            <h3 class="panel-title text-center"><b>Most Failed Package Names</b></h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+          <div class="col-md-4 pull-right">
+            <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
+            <p><b>Zoom out: </b>Double click on the graph</p> 
+          </div>
+        </div>
+          <div id="failed_package_names"></div>
+          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_failed_names" aria-expanded="false" aria-controls="collapse_failed_names">Show in Tabular form</button>
+          <div class="collapse" id="collapse_failed_names">
+            <table class="table table-hover table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for failed_package in response['most_failed_package_names'] %}
+                  <tr>
+                    <td>{{failed_package['name']}}</td>
+                    <td>{{failed_package['count']}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>             
+          </div>
+          <br /> <br />
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  
   <div class="row">
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <div class="panel panel-default">
@@ -156,47 +197,6 @@
 
   <hr>
 
-  <div class="row">
-    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-      <div class="panel panel-default">
-        <div class="panel-heading panel-heading-custom">
-            <h3 class="panel-title text-center"><b>Most Failed Package Names</b></h3>
-        </div>
-        <div class="panel-body">
-          <div class="row">
-          <div class="col-md-4 pull-right">
-            <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
-            <p><b>Zoom out: </b>Double click on the graph</p> 
-          </div>
-        </div>
-          <div id="failed_package_names"></div>
-          <button class="btn btn-primary col-md-12" type="button" data-toggle="collapse" data-target="#collapse_failed_names" aria-expanded="false" aria-controls="collapse_failed_names">Show in Tabular form</button>
-          <div class="collapse" id="collapse_failed_names">
-            <table class="table table-hover table-bordered table-striped">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for failed_package in response['most_failed_package_names'] %}
-                  <tr>
-                    <td>{{failed_package['name']}}</td>
-                    <td>{{failed_package['count']}}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>             
-          </div>
-          <br /> <br />
-          
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <hr>
   <!-- Different OS USERS -->
   <!-- ===================================================================== -->
   <div class="row">
