@@ -6,9 +6,11 @@ redis = Redis()
 
 
 class RateLimit(object):
-    expiration_window = 10
+    """TODO Comment"""
+    expiration_window = 10  # TODO What does this mean?
 
     def __init__(self, key_prefix, limit, per, send_x_headers):
+        """TODO Comment arguments"""
         self.reset = (int(time.time()) // per) * per + per
         self.key = key_prefix + str(self.reset)
         self.limit = limit
