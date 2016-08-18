@@ -120,9 +120,6 @@
         </div>
         <div class="panel-body">
           <div class="row">
-          <div class="col-md-6 col-md-offset-2">
-          <input id="toggle_failed_packages" name="toggle_failed_packages" data-on="All" data-off="Top 10" onchange="failed_packages_toggle();"  type="checkbox"  data-toggle="toggle" />
-          </div>
           <div class="col-md-4 pull-right">
             <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
             <p><b>Zoom out: </b>Double click on the graph</p> 
@@ -167,9 +164,6 @@
         </div>
         <div class="panel-body">
           <div class="row">
-          <div class="col-md-6 col-md-offset-2">
-          <input id="toggle_failed_packages_names" name="toggle_failed_packages" data-on="All" data-off="Top 10" onchange="failed_packages_names_toggle();"  type="checkbox"  data-toggle="toggle" />
-          </div>
           <div class="col-md-4 pull-right">
             <p><b>Zoom in: </b>Draw a box on the region of the graph</p>
             <p><b>Zoom out: </b>Double click on the graph</p> 
@@ -242,21 +236,5 @@
     func_os_user({{ response['os_users']|tojson}});
     func_failed_installs({{ response['most_failed_packages']|tojson}});
     func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
-
-    function failed_packages_toggle(){
-      var optn = document.getElementById('toggle_failed_packages').checked;
-      if(optn == true)
-        func_failed_installs_all({{ response['most_failed_packages']|tojson}});
-      else
-        func_failed_installs({{ response['most_failed_packages']|tojson}});
-    }
-    function failed_packages_names_toggle(){
-      var optn = document.getElementById('toggle_failed_packages_names').checked;
-      if(optn == true)
-        func_failed_installs_names_all({{ response['most_failed_package_names']|tojson}});
-      else
-        func_failed_installs_names({{ response['most_failed_package_names']|tojson}});
-    }
-    
   </script>
 {% endblock %}

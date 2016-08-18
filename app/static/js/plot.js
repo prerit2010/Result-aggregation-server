@@ -65,43 +65,6 @@ function func_os_user(os_user){
 }
 
 
-function func_failed_installs_all(most_failed_packages){
-    /* Plot a bar graph for most failed packages (all) on '/view/'
-    */
-
-    var x_values = []
-    var y_values = []
-    for(var i=0 ; i < most_failed_packages.length ; i++){
-        var failed_package = most_failed_packages[i]['name'] + ' (' + most_failed_packages[i]['version'].split('(')[0] + ')';
-        x_values.push(failed_package);
-        y_values.push(most_failed_packages[i]['count']);
-    }
-    var data = [
-        {
-            x:  y_values,
-            y: x_values,
-            type: 'bar',
-            orientation : 'h'
-        }
-    ];
-
-    var layout = {
-        title: '',
-        showlegend: false,
-        margin:{
-            l:300
-        },
-        yaxis : {
-            title : 'Package Names ( failed )'
-        },
-        xaxis : {
-            title : 'Number of users'
-        }
-    };
-    Plotly.newPlot('failed_package', data, layout, mode_bar_global_settings);
-}
-
-
 function func_failed_installs(most_failed_packages){
     /* Plot a bar graph for most failed packages and limit the results
      * upto 10 only.
@@ -117,6 +80,8 @@ function func_failed_installs(most_failed_packages){
             break;
         }
     }
+    x_values.reverse();
+    y_values.reverse();
     var data = [
         {
             x:  y_values,
@@ -157,43 +122,6 @@ function func_failed_installs(most_failed_packages){
 }
 
 
-function func_failed_installs_names_all(most_failed_packages){
-    /* Plot a bar graph for most failed packages (all) grouped by their name only.
-     * Versions are not taken into account here. 
-    */
-
-    var x_values = []
-    var y_values = []
-    for(var i=0 ; i < most_failed_packages.length ; i++){
-        var failed_package = most_failed_packages[i]['name'];
-        x_values.push(failed_package);
-        y_values.push(most_failed_packages[i]['count']);
-    }
-    var data = [
-        {
-            x:  y_values,
-            y: x_values,
-            type: 'bar',
-            orientation : 'h'
-        }
-    ];
-    var layout = {
-        title: '',
-        showlegend: false,
-        margin:{
-            l:300
-        },
-        yaxis : {
-            title : 'Package Names ( failed )'
-        },
-        xaxis : {
-            title : 'Number of users'
-        }
-    };
-    Plotly.newPlot('failed_package_names', data, layout, mode_bar_global_settings);
-}
-
-
 function func_failed_installs_names(most_failed_packages){
     /* Plot a bar graph for most failed packages (top 10) grouped by their name only.
      * Versions are not taken into account here. 
@@ -208,6 +136,8 @@ function func_failed_installs_names(most_failed_packages){
         if(i > 8)
             break;
     }
+    x_values.reverse();
+    y_values.reverse();
     var data = [
         {
             x:  y_values,
