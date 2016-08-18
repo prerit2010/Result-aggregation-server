@@ -131,7 +131,6 @@ def installation_data():
 
 @application.route('/')
 def default():
-    # return "<h1 style='color:blue'>Hello There!</h1>"
     return render_template('landing_page.html', response=None)
 
 
