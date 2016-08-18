@@ -105,7 +105,8 @@ def installation_data():
         user_info.python_version = python_version
         user_info.unique_user_id = unique_user_id
 
-    # Add the objects list created above to user_info aand attempt objects to reference the foreign key for both.
+    # Add the objects list created above to user_info and attempt objects
+    # to reference the foreign key for both.
     user_info.successful_installs.extend(success_objects_list)
     user_info.failed_installs.extend(failed_objects_list)
     attempt.successful_installs.extend(success_objects_list)
@@ -123,7 +124,8 @@ def installation_data():
     else:
         summary = {"status": "Successful"}
 
-    # Return the key and message, whether a new unique_user_id was created or previous unique_user_id was used.
+    # Return the key and message, whether a new unique_user_id was created
+    # or previous unique_user_id was used.
     summary['message'] = message
     response = {'key': unique_user_id, 'summary': summary}
     return make_response(jsonify(response))
