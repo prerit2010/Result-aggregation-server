@@ -18,6 +18,20 @@ function on_page_load(valueToSelect, most_failed_packages){
 }
 
 
+function check_same_package(){
+    var package_one_version = document.getElementById('package_one_version').value;
+    var package_two_version = document.getElementById('package_two_version').value;
+    var package_one_name = document.getElementById('package_one_name').value;
+    var package_two_name = document.getElementById('package_two_name').value;
+    if(package_two_name == package_one_name && package_one_version == package_two_version){
+        alert("Same packages cannot be compared!");
+        return false;
+    }
+    else
+        return true;
+}
+
+
 function compare_button(){
     /* This functions decides between the values of submit button
      * ('Submit' or 'Compare'). If packages from both the dropdowns are selected,
