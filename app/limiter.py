@@ -6,9 +6,22 @@ redis = Redis()
 
 
 class RateLimit(object):
+    """Implements a simple counter of number of request from a given remote address
+       on a given endpoint within a time frame (per) with redis storage.
+    """
+
+    # Extra seconds of time for the key to expire in redis so that badly synchronized clocks
+    # between the workers and the redis server do not cause problems.
     expiration_window = 10
 
     def __init__(self, key_prefix, limit, per, send_x_headers):
+        """
+        :param key_prefix: prefix to use for redis key-value storage `string`.
+        :param limit: number of requests allowed `int`.
+        :param per: amount of time (seconds) to limit number of requests above to `int`.
+        :param send_x_headers: `bool` to send http headers X-RateLimit-* in response or not.
+        """
+
         self.reset = (int(time.time()) // per) * per + per
         self.key = key_prefix + str(self.reset)
         self.limit = limit
