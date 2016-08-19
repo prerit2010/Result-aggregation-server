@@ -313,6 +313,8 @@ def data_view_detail_package():
     package_two_version = request.args.get('package_two_version')
     if package_one_name is None:
         return redirect(url_for('data_view'))
+    if package_two_name and package_two_name == package_one_name and package_one_version == package_two_version:
+        package_two_name = None
     if package_one_version == "All":  # if all versions is selected, turn the version selected to None
         package_one_version = None
     if package_two_name and package_two_name == "None":
