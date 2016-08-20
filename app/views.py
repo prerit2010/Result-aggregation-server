@@ -360,7 +360,7 @@ def data_view_detail_package():
                         UserSystemInfo.python_version, FailedInstalls.create_time).filter(
                         UserSystemInfo.id == FailedInstalls.user_id,
                         FailedInstalls.name == failed_package['package_name'],
-                        FailedInstalls.name == failed_package['version'],
+                        FailedInstalls.version == failed_package['version'],
                         UserSystemInfo.workshop_id == workshop_id
                     )
             else:
