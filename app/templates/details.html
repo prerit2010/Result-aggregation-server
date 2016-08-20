@@ -2,7 +2,9 @@
 
 {% block content_plots %}
 
-  <div class="main" style="margin-top : 50px;">
+{% include "query_column.html" %}
+
+  <div class="main col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" style="margin-top : 50px;">
   
     <div class="row">
     {% for package in response %}
