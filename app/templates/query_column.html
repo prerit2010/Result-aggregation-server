@@ -1,0 +1,103 @@
+<div class="row">
+  <div class="col-sm-3 col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+      <li class="active">
+      </li>
+    </ul>
+    <ul class="nav nav-sidebar">
+      <li>
+        <div class="form-group container-fluid">
+          <label for="sel1">Filter by workshop:</label>
+          <select class="form-control" id="sel_workshop" onchange="location.href='/view/' + this.options[this.selectedIndex].value;">
+            <option value="All workshops">All workshops</option>
+            {% for workshop in response['workshops'] %}
+              <option value="{{workshop}}">{{workshop}}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </li>
+    </ul>
+    <ul class="nav nav-sidebar">
+      <li>
+        <div class="container-fluid">
+          <label>Filter by attempts:</label>
+          {% if response['workshop_id'] %}
+            <form action="/view/{{response['workshop_id']}}" method="GET">
+          {% else %}
+            <form action="/view/" method="GET">
+          {% endif %}
+                        
+                         
+          <select class="form-control" name="all_attempts" onchange="this.form.submit();">
+            {% if response['all_attempts'] %}
+              <option value="1" selected>All attempts</option>
+              <option value="0">Latest attempt</option>
+            {% else %}
+              <option value="1">All attempts</option>
+              <option value="0" selected>Latest attempt</option>
+            {% endif %}
+          </select>
+          </form>
+        </div>
+      </li>
+      <li>
+        <div class="container-fluid">
+          <p><b>Latest attempt: </b>Last attempt made by each user.</p>
+          <p><b>All attempts: </b>All attempts made by each user.</p>
+        </div>
+      </li>
+    </ul>
+    <ul class="nav nav-sidebar">
+      <form action="/view/detail/" method="GET">
+      <li>
+        <div class="form-group container-fluid">
+          <label for="sel1">Filter by failed package :</label>
+            {% if response['all_attempts'] %}
+              <input type="hidden" name="all_attempts" value="{{response['all_attempts']}}" />
+            {% endif %}
+            <select class="form-control" id="package_one_name" onchange="compare_button(); get_versions_one(this.value, {{response['most_failed_packages']}});" name="package_one_name">
+              <option>None</option>
+              {% for failed_package in response['most_failed_packages'] %}
+                <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
+              {% endfor %}
+            </select>
+            {% if response['workshop_id'] %}
+              <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
+            {% endif %}
+        </div>   
+      </li>
+      <li>
+        <div class="form-group container-fluid" id="version_one" style="display:none">
+          <label for="sel1">Version :</label>
+          <select class="form-control" id="package_one_version"  name="package_one_version">
+            </select> 
+        </div>   
+      </li>
+      <li>
+        <div class="form-group container-fluid">
+          <label for="sel1">Also compare with :</label>
+            <select class="form-control" id="package_two_name" onchange="compare_button(); get_versions_two(this.value, {{response['most_failed_packages']}});" name="package_two_name">
+              <option>None</option>
+              {% for failed_package in response['most_failed_packages'] %}
+                <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
+              {% endfor %}
+            </select>
+        </div>   
+      </li>
+      <li>
+        <div class="form-group container-fluid" id="version_two" style="display:none">
+          <label for="package_two_version">Version :</label>
+          <select class="form-control" id="package_two_version"  name="package_two_version">
+          </select> 
+        </div>   
+      </li>
+      <li>
+        <div class="container">
+          <input id="submit_button" type="submit" onclick="return check_same_package();" class="btn btn-primary" value="Submit" disabled>
+        </div>
+      </li>
+      </form>
+    </ul>  
+    </ul>
+  </div>
+</div>

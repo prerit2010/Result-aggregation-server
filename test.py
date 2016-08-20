@@ -368,7 +368,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json[0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
+        system_count = response_json['package_details'][0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 2)
 
     def test_detail_all_attempts_all_workshops(self):
@@ -386,7 +386,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json[0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
+        system_count = response_json['package_details'][0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 3)
 
     def test_detail_latest_attempt_one_workshop(self):
@@ -404,7 +404,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json[0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
+        system_count = response_json['package_details'][0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 1)
 
     def test_detail_all_attempts_one_workshop(self):
@@ -423,7 +423,7 @@ class TestCase(unittest.TestCase):
         response = self.application.get('/view/detail/', query_string=payload)
         self.assertEqual(response.status_code, 200)
         response_json = json.loads(response.data.decode('utf-8'))
-        system_count = response_json[0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
+        system_count = response_json['package_details'][0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
         self.assertEqual(system_count, 2)
 
 if __name__ == '__main__':
