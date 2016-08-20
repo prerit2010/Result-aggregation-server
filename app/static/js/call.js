@@ -4,6 +4,10 @@ function on_page_load(valueToSelect, most_failed_packages){
      * calling get_versions_one() and get_versions_two() if the package
      * selected is not None.
     */
+    // alert(valueToSelect);
+    if(valueToSelect.toString() == "None"){
+        valueToSelect = "All workshops"
+    }
     document.getElementById('sel_workshop').value = valueToSelect;
     if(!most_failed_packages)
         return;

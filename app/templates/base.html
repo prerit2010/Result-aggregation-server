@@ -12,11 +12,7 @@
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   </head>
-  {% if response['most_failed_packages'] %}
-    <body onload="on_page_load('{{response['workshop_id']}}', {{response['most_failed_packages']}}); compare_button();">
-  {% else %}
-    <body onload="on_page_load('{{response['workshop_id']}}', null); compare_button();">
-  {% endif %}    
+  <body onload="on_page_load('{{response['workshop_id']}}', {{response['most_failed_packages']}}); compare_button();">
     <div class="container-fluid">
 
       {% block content %}
