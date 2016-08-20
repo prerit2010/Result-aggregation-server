@@ -358,18 +358,18 @@ class TestCase(unittest.TestCase):
         package_failed_count = response_json['most_failed_packages'][0]['count']
         self.assertEqual(package_failed_count, 2)
 
-    # def test_detail_latest_attempts_all_workshops(self):
-    #     """
-    #     Get details of a package for latest attempt and all workshops.
-    #     """
+    def test_detail_latest_attempts_all_workshops(self):
+        """
+        Get details of a package for latest attempt and all workshops.
+        """
 
-    #     self.create_database()
-    #     payload = {"package_name": "EasyMercurial", "package_version": "2.5.0", "export": "json"}
-    #     response = self.application.get('/view/detail/', query_string=payload)
-    #     self.assertEqual(response.status_code, 200)
-    #     response_json = json.loads(response.data.decode('utf-8'))
-    #     system_count = response_json['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
-    #     self.assertEqual(system_count, 2)
+        self.create_database()
+        payload = {"package_one_name": "EasyMercurial", "package_one_version": "2.5.0", "export": "json"}
+        response = self.application.get('/view/detail/', query_string=payload)
+        self.assertEqual(response.status_code, 200)
+        response_json = json.loads(response.data.decode('utf-8'))
+        system_count = response_json[0]['user_system_info']['system'][0][1]  # format : [('Linux', 3), ('windows', 2)]
+        self.assertEqual(system_count, 2)
 
     # def test_detail_all_attempts_all_workshops(self):
     #     """
