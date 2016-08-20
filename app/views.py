@@ -323,6 +323,8 @@ def data_view_detail_package():
         package_two_version = None
 
     workshop_id = request.args.get('workshop_id')
+    if workshop_id and workshop_id == "All workshops":
+        workshop_id = None
     all_attempts = request.args.get('all_attempts')
     if all_attempts:
         all_attempts = int(all_attempts)
@@ -336,7 +338,7 @@ def data_view_detail_package():
             "version": package_two_version,
         }
     ]
-    response = []
+    package_details = []
     for failed_package in failed_packages:  # iterate over the loop of 2 packages
         if not failed_package['package_name']:  # in case only 1 package is selected
             continue
@@ -500,11 +502,72 @@ def data_view_detail_package():
                 "machine": machine,
                 "python_version": python_version
             },
-            "create_time": create_time,
-            "workshop_id": workshop_id,
-            "all_attempts": all_attempts,
+            "create_time": create_time
         }
-        response.append(resp)
+        package_details.append(resp)
+
+    # if all attempts toggle is on, select all failed install for each attempt.
+    if all_attempts:
+        if workshop_id:
+            failed_info = db.session.query(
+                UserSystemInfo, FailedInstalls).add_columns(
+                FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
+                UserSystemInfo.id == FailedInstalls.user_id,
+                UserSystemInfo.workshop_id == workshop_id).group_by(
+                FailedInstalls.name, FailedInstalls.version)
+        else:
+            failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version,
+                db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
+    else:
+        if workshop_id:
+            attempts = db.session.query(
+                UserSystemInfo, Attempts).add_columns(
+                db.func.max(Attempts.id).label("attempt_id")).filter(
+                UserSystemInfo.unique_user_id == Attempts.unique_user_id,
+                UserSystemInfo.workshop_id == workshop_id
+            ).group_by(Attempts.unique_user_id)
+            latest_attempt_ids = [x.attempt_id for x in attempts]
+
+            failed_info = db.session.query(
+                FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
+                FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(
+                FailedInstalls.name, FailedInstalls.version).all()
+        else:
+            # select all the latest attempt_ids per unique user from attempts table
+            attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
+            latest_attempt_ids = [x[0] for x in attempts]
+
+            # query failed_installs table with a filter : attempt_id in latest_attempt_ids.
+            failed_info = db.session.query(
+                FailedInstalls.name, FailedInstalls.version,
+                db.func.count().label("count")).filter(
+                FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(
+                FailedInstalls.name, FailedInstalls.version).all()
+
+            failed_info_names = db.session.query(FailedInstalls.name, db.func.count().label("count")).filter(
+                FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name).all()
+
+    most_failed_packages = [
+        {"name": fail.name, "version": fail.version, "count": fail.count}
+        for fail in failed_info
+    ]
+
+    most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
+
+    # Get a list of all the workshops
+    user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
+    workshops = [
+        user.workshop_id for user in user_info
+        if user.workshop_id is not None
+    ]
+
+    response = {
+        "package_details": package_details,
+        "most_failed_packages": most_failed_packages,
+        "workshops": workshops,
+        "workshop_id": workshop_id,
+        "all_attempts": all_attempts
+    }
 
     if request.args.get('export') == 'json':
         return make_response(json.dumps(response))

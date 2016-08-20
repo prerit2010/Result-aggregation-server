@@ -21,7 +21,7 @@
         <li>
           <div class="container-fluid">
             <label>Filter by attempts:</label>
-            {% if not response['all_workshops'] %}
+            {% if response['workshop_id'] %}
               <form action="/view/{{response['workshop_id']}}" method="GET">
             {% else %}
               <form action="/view/" method="GET">
@@ -61,7 +61,7 @@
                   <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
                 {% endfor %}
               </select>
-              {% if not response['all_workshops'] %}
+              {% if response['workshop_id'] %}
                 <input type="hidden" value="{{response['workshop_id']}}" name="workshop_id">
               {% endif %}
           </div>   
