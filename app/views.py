@@ -515,9 +515,18 @@ def data_view_detail_package():
                 UserSystemInfo.id == FailedInstalls.user_id,
                 UserSystemInfo.workshop_id == workshop_id).group_by(
                 FailedInstalls.name, FailedInstalls.version)
+
+            failed_info_names = db.session.query(
+                UserSystemInfo, FailedInstalls).add_columns(
+                FailedInstalls.name, db.func.count().label("count")).filter(
+                UserSystemInfo.id == FailedInstalls.user_id,
+                UserSystemInfo.workshop_id == workshop_id).group_by(FailedInstalls.name)
         else:
             failed_info = db.session.query(FailedInstalls.name, FailedInstalls.version,
                 db.func.count().label("count")).group_by(FailedInstalls.name, FailedInstalls.version).all()
+
+            failed_info_names = db.session.query(FailedInstalls.name,
+                                                 db.func.count().label("count")).group_by(FailedInstalls.name).all()
     else:
         if workshop_id:
             attempts = db.session.query(
@@ -532,6 +541,9 @@ def data_view_detail_package():
                 FailedInstalls.name, FailedInstalls.version, db.func.count().label("count")).filter(
                 FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(
                 FailedInstalls.name, FailedInstalls.version).all()
+
+            failed_info_names = db.session.query(FailedInstalls.name, db.func.count().label("count")).filter(
+                FailedInstalls.attempt_id.in_(latest_attempt_ids)).group_by(FailedInstalls.name).all()
         else:
             # select all the latest attempt_ids per unique user from attempts table
             attempts = db.session.query(db.func.max(Attempts.id)).group_by(Attempts.unique_user_id).all()
@@ -552,7 +564,13 @@ def data_view_detail_package():
         for fail in failed_info
     ]
 
+    most_failed_package_names = [
+        {"name": fail.name, "count": fail.count}
+        for fail in failed_info_names
+    ]
+
     most_failed_packages = sorted(most_failed_packages, key=lambda k: k['count'], reverse=True)
+    most_failed_package_names = sorted(most_failed_package_names, key=lambda k: k['count'], reverse=True)
 
     # Get a list of all the workshops
     user_info = db.session.query(UserSystemInfo.workshop_id.distinct().label("workshop_id")).all()
@@ -564,6 +582,7 @@ def data_view_detail_package():
     response = {
         "package_details": package_details,
         "most_failed_packages": most_failed_packages,
+        "most_failed_package_names": most_failed_package_names,
         "workshops": workshops,
         "workshop_id": workshop_id,
         "all_attempts": all_attempts

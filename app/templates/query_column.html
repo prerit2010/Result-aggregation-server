@@ -57,7 +57,7 @@
             {% endif %}
             <select class="form-control" id="package_one_name" onchange="compare_button(); get_versions_one(this.value, {{response['most_failed_packages']}});" name="package_one_name">
               <option>None</option>
-              {% for failed_package in response['most_failed_packages'] %}
+              {% for failed_package in response['most_failed_package_names'] %}
                 <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
               {% endfor %}
             </select>
@@ -78,7 +78,7 @@
           <label for="sel1">Also compare with :</label>
             <select class="form-control" id="package_two_name" onchange="compare_button(); get_versions_two(this.value, {{response['most_failed_packages']}});" name="package_two_name">
               <option>None</option>
-              {% for failed_package in response['most_failed_packages'] %}
+              {% for failed_package in response['most_failed_package_names'] %}
                 <option value="{{failed_package['name']}}">{{failed_package['name']}}</option>
               {% endfor %}
             </select>
